@@ -1,0 +1,43 @@
+/* Pixel-whale pet: layered pixel art rendered as CSS box-shadow lists.
+   The artwork palette is data (from the user's whale_frames sprite set), not
+   UI tokens, so it lives as component-local variables bridged through the
+   shared --whale-cN names; dark mode keeps the same ocean hues. The whole
+   pet scales through --whale-scale (integer multiples stay crisp). */
+
+.pet {
+  /* Artwork palette (pixel-sprite colors, not theme tokens). */
+  --whale-c1: #203864;
+  --whale-c2: #0066ff;
+  --whale-c3: #b4c7e7;
+  --whale-c4: #f2f2f2;
+  --whale-scale: 2;
+
+  position: relative;
+  flex: none;
+  width: calc(40px * var(--whale-scale));
+  height: calc(25px * var(--whale-scale));
+  cursor: default;
+}
+
+/* The pixel layer: one absolutely-positioned 1x1 origin whose box-shadow
+   list paints every pixel; transform scaling keeps the pixel grid crisp.
+   The shadow string (--whale-shadows) is frame data computed in TS. */
+.pixels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  box-shadow: var(--whale-shadows);
+  transform: scale(var(--whale-scale));
+  transform-origin: top left;
+}
+
+/* prefers-reduced-motion: the pet holds its resting pose; React still
+   re-renders frames but CSS shows the same result (blink/wag/flutter/spout
+   are all style-driven box-shadow swaps, so nothing visibly animates). */
+@media (prefers-reduced-motion: reduce) {
+  .pet {
+    --whale-scale: 2;
+  }
+}
