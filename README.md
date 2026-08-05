@@ -2,6 +2,12 @@
 
 DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧）常驻一只小鲸鱼，随会话快照实时反应——**零核心改动**。
 
+## 演示 Demo
+
+<video src="https://raw.githubusercontent.com/dsh-external/dsh-ui-whale/main/docs/dsh-ui-whale-demo.mp4" controls width="360"></video>
+
+> 完整视频：[docs/dsh-ui-whale-demo.mp4](docs/dsh-ui-whale-demo.mp4)（约 0.9 MB）
+
 ## 它做什么
 
 - **平时（空闲）**：隔一会儿眨一次眼（约 5 秒）；偶尔摆一下尾巴（约 11 秒一次，0-1-2-3-2-1-0 来回）；偶尔动动胸鳍（约 7 秒一次，0-1-2-1-0 来回）。
