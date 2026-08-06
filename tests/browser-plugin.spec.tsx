@@ -12,11 +12,12 @@
  */
 import { Context } from 'cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render } from '@testing-library/react'
+import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import type { ConversationSnapshot, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
 import { apply, inject } from '../src/client/index.ts'
 import { WhalePet, type WhalePetProps } from '../src/client/WhalePet.tsx'
 import { zh as whaleZh } from '../src/client/locales.ts'
+import { TICK_MS } from '../src/client/animation.ts'
 import { apply as nodeApply } from '../src/index.ts'
 
 afterEach(cleanup)
@@ -119,5 +120,25 @@ describe('WhalePet component', () => {
     )
     const pet = container.querySelector('[data-whale-pet]')
     expect(pet?.getAttribute('data-mood')).toBe('working')
+  })
+
+  it('plays the heart pass 0-1-2-3-0 on click', () => {
+    vi.useFakeTimers()
+    try {
+      const { container } = render(<WhalePet {...(propsWith({}) as unknown as WhalePetProps)} />)
+      const pet = container.querySelector('[data-whale-pet]') as HTMLElement
+      expect(pet.dataset.heart).toBe('0')
+      act(() => { fireEvent.click(pet) })
+      expect(pet.dataset.heart).toBe('1')
+      // One full pass on the fixed tick: each size held 3 ticks, then none.
+      const trace: number[] = []
+      for (let i = 0; i < 10; i += 1) {
+        act(() => { vi.advanceTimersByTime(TICK_MS) })
+        trace.push(Number(pet.dataset.heart))
+      }
+      expect(trace).toEqual([1, 1, 2, 2, 2, 3, 3, 3, 0, 0])
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

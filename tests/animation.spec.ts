@@ -31,7 +31,7 @@ describe('moodOf', () => {
 
 describe('advance / frameOf', () => {
   it('starts at the resting pose', () => {
-    expect(frameOf(initialState())).toEqual({ tail: 0, fin: 0, spout: 0, blink: false })
+    expect(frameOf(initialState())).toEqual({ tail: 0, fin: 0, spout: 0, heart: 0, blink: false })
   })
 
   it('idle mostly rests, then gives one tail thump (single pass, back to rest)', () => {
@@ -124,5 +124,47 @@ describe('advance / frameOf', () => {
   it('moodKey addresses the locale namespace', () => {
     expect(moodKey('idle')).toBe('mood.idle')
     expect(moodKey('spouting')).toBe('mood.spouting')
+  })
+
+  it('plays one heart pass 0-1-2-3-0 on a click and clears after', () => {
+    let s = initialState()
+    s = advance(s, 'idle', true) // the click arms the pass
+    const trace: number[] = [frameOf(s).heart]
+    for (let i = 0; i < 12; i += 1) {
+      s = advance(s, 'idle')
+      trace.push(frameOf(s).heart)
+    }
+    // One-way growth: small → medium → large (each held 3 ticks), then back
+    // to no heart — never a reverse pass, and the resting pose is unaffected.
+    expect(trace).toEqual([1, 1, 1, 2, 2, 2, 3, 3, 3, 0, 0, 0, 0])
+    expect(frameOf(initialState()).heart).toBe(0)
+  })
+
+  it('a second click restarts the heart pass from the small heart', () => {
+    let s = initialState()
+    s = advance(s, 'idle', true)
+    s = advance(s, 'idle') // mid-pass, still on the small heart
+    s = advance(s, 'idle', true) // click again → restart
+    const trace: number[] = [frameOf(s).heart]
+    for (let i = 0; i < 9; i += 1) {
+      s = advance(s, 'idle')
+      trace.push(frameOf(s).heart)
+    }
+    // The restart yields a complete fresh 1-2-3-0 pass.
+    expect(trace).toEqual([1, 1, 1, 2, 2, 2, 3, 3, 3, 0])
+  })
+
+  it('the heart is an independent overlay: other limbs keep animating', () => {
+    let s = initialState()
+    s = advance(s, 'working', true)
+    const tails = new Set<number>()
+    for (let i = 0; i < 30; i += 1) {
+      s = advance(s, 'working')
+      tails.add(frameOf(s).tail)
+    }
+    // The whale kept wagging during the heart pass…
+    expect(tails.size).toBeGreaterThan(2)
+    // …and the heart finished its one-way pass back to none.
+    expect(frameOf(s).heart).toBe(0)
   })
 })

@@ -10,13 +10,14 @@
   --whale-c2: #0066ff;
   --whale-c3: #b4c7e7;
   --whale-c4: #f2f2f2;
+  --whale-c5: #cc3399;
   --whale-scale: 2;
 
   position: relative;
   flex: none;
   width: calc(40px * var(--whale-scale));
   height: calc(25px * var(--whale-scale));
-  cursor: default;
+  cursor: pointer;
 }
 
 /* The pixel layer: one absolutely-positioned 1x1 origin whose box-shadow

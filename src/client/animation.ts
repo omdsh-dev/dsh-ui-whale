@@ -11,7 +11,10 @@
  * then back to rest). While thinking/working/running the tail wags and the
  * fins flutter continuously (faster the busier the mood), and the blink
  * cadence tightens. When a turn settles the whale spouts a water fountain
- * (one-way frame run 0-1-2-3-4-5-6) for a short celebration.
+ * (one-way frame run 0-1-2-3-4-5-6) for a short celebration. A click on the
+ * pet requests one heart pass (one-way frame run 0-1-2-3-0 — a pink heart
+ * grows from small to large in the top-left corner, then disappears); a
+ * second click restarts it.
  */
 
 import type { WhaleFrame } from './sprite.ts'
@@ -80,6 +83,16 @@ const FIN_SEQUENCE: readonly number[] = [1, 2, 1]
  */
 const SPOUT_SEQUENCE: readonly number[] = [1, 2, 3, 4, 5, 6]
 
+/**
+ * Heart poses for one full click pass (resting pose is index 0). Special
+ * case: the heart plays ONE-WAY 0-1-2-3-0 — it grows small → medium → large
+ * in the top-left corner, then the pass ends (no reverse pass).
+ */
+const HEART_SEQUENCE: readonly number[] = [1, 2, 3]
+
+/** How long each heart size is held (ticks). */
+const HEART_HOLD = 3
+
 /** How long the spout celebration lasts after a turn settles (ticks). */
 export const SPOUT_DURATION = 18
 
@@ -111,6 +124,10 @@ export interface WhaleAnimationState {
   readonly spoutStep: number
   /** Ticks remaining before the current spout frame advances. */
   readonly spoutHold: number
+  /** Heart frame hold position within HEART_SEQUENCE; -1 = no heart. */
+  readonly heartStep: number
+  /** Ticks remaining before the current heart frame advances. */
+  readonly heartHold: number
 }
 
 /** The initial animation state (resting pose). */
@@ -128,6 +145,8 @@ export function initialState(): WhaleAnimationState {
     blink: false,
     spoutStep: -1,
     spoutHold: 0,
+    heartStep: -1,
+    heartHold: 0,
   }
 }
 
@@ -192,9 +211,11 @@ function advanceLimb(
  * Advance the animation one tick.
  * @param state - the previous animation state.
  * @param mood - the mood derived from the snapshot (spouting when celebrating).
+ * @param heartRequested - true when the pet was clicked: (re)arms the one-way
+ *   0-1-2-3-0 heart pass from the small heart.
  * @returns the next animation state.
  */
-export function advance(state: WhaleAnimationState, mood: WhaleMood): WhaleAnimationState {
+export function advance(state: WhaleAnimationState, mood: WhaleMood, heartRequested = false): WhaleAnimationState {
   const continuous = continuousMotion(mood)
 
   const tail = advanceLimb(
@@ -234,6 +255,26 @@ export function advance(state: WhaleAnimationState, mood: WhaleMood): WhaleAnima
     blinkCountdown = state.blinkCountdown - 1
   }
 
+  // Heart: a click (re)arms the one-way 0-1-2-3-0 pass — each size holds
+  // HEART_HOLD ticks, then the pass ends back on no heart.
+  let heartStep = state.heartStep
+  let heartHold = state.heartHold
+  if (heartRequested) {
+    heartStep = 0
+    heartHold = HEART_HOLD - 1
+  } else if (heartStep >= 0) {
+    if (heartHold <= 0) {
+      if (heartStep >= HEART_SEQUENCE.length - 1) {
+        heartStep = -1
+      } else {
+        heartStep += 1
+        heartHold = HEART_HOLD - 1
+      }
+    } else {
+      heartHold -= 1
+    }
+  }
+
   return {
     mood,
     tick: state.tick + 1,
@@ -247,6 +288,8 @@ export function advance(state: WhaleAnimationState, mood: WhaleMood): WhaleAnima
     blink,
     spoutStep,
     spoutHold,
+    heartStep,
+    heartHold,
   }
 }
 
@@ -255,10 +298,12 @@ export function frameOf(state: WhaleAnimationState): WhaleFrame {
   const tailIndex = state.wagStep < 0 ? 0 : (WAG_SEQUENCE[state.wagStep] ?? 0)
   const finIndex = state.finStep < 0 ? 0 : (FIN_SEQUENCE[state.finStep] ?? 0)
   const spoutIndex = state.spoutStep < 0 ? 0 : (SPOUT_SEQUENCE[state.spoutStep] ?? 0)
+  const heartIndex = state.heartStep < 0 ? 0 : (HEART_SEQUENCE[state.heartStep] ?? 0)
   return {
     tail: tailIndex,
     fin: finIndex,
     spout: spoutIndex,
+    heart: heartIndex,
     blink: state.blink,
   }
 }

@@ -3,11 +3,13 @@
  * visible; its pose follows the live conversation snapshot — the tail wags
  * (slowly while idle, faster while thinking/working), the eyes blink on a
  * per-mood cadence, and when a turn settles the whale spouts a droplet
- * fountain for a short celebration. The pet renders as layered CSS
- * box-shadow pixel art (body + eyes + tail + spout), each layer a 1x1 div
- * whose shadow list is the frame data, so animation is pure style swaps on
- * a fixed DOM tree — no re-layout, no per-frame React churn beyond one
- * style update per layer.
+ * fountain for a short celebration. Clicking the pet plays a pink-heart
+ * celebration (0-1-2-3-0, growing in the top-left corner) on top of whatever
+ * the whale is doing. The pet renders as layered CSS box-shadow pixel art
+ * (body + eyes + tail + spout + heart), each layer a 1x1 div whose shadow
+ * list is the frame data, so animation is pure style swaps on a fixed DOM
+ * tree — no re-layout, no per-frame React churn beyond one style update per
+ * layer.
  */
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
@@ -30,7 +32,7 @@ function isThinking(snapshot: ConversationSnapshot): boolean {
 /**
  * The header pet. Renders the layered whale and drives its animation on a
  * fixed tick; a completed turn (running true → false edge) arms the spout
- * celebration for SPOUT_DURATION ticks.
+ * celebration for SPOUT_DURATION ticks; a click arms one heart pass.
  */
 export function WhalePet({ useSession, t }: WhalePetProps) {
   const running = useSession(s => s.running)
@@ -82,10 +84,12 @@ export function WhalePet({ useSession, t }: WhalePetProps) {
     <div
       className={css.pet}
       data-mood={mood}
+      data-heart={frame.heart}
       data-whale-pet
       role="img"
       aria-label={`${t('title')} · ${t(moodKey(mood))}`}
       title={t(moodKey(mood))}
+      onClick={() => setAnim(prev => advance(prev, prev.mood, true))}
     >
       <span className={css.pixels} style={{ '--whale-shadows': shadows.body } as CSSProperties} />
     </div>
