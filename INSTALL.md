@@ -25,6 +25,19 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
       name: '@dsh-external/dsh-ui-whale'
 ```
 
+## snapshot0806 —— registry 安装方式（可选通道）
+
+前提：DSH 已集成 plugin-registry（`dsh registry` 命令可用；集成步骤见 [plugin-registry 仓库](https://github.com/dsh-external/plugin-registry/blob/main/docs/cookbook/integrating-into-dsh.md)）。本插件的 `dsh.plugin.json` 清单已通过 registry id 校验（id = npm 包名 `@dsh-external/dsh-ui-whale`，含 `client` 声明）。registry 通道与官方 profile 通道**互斥**（碰撞守卫拒绝双挂载），二选一。
+
+```sh
+# 目录安装（需要代码，克隆 + pnpm install 后）
+dsh registry install /path/to/dsh-ui-whale
+# 或 tarball 分发（接收方无需克隆）：
+#   tar -czf dsh-ui-whale.tgz -C ./dsh-ui-whale .
+#   dsh registry install dsh-ui-whale.tgz
+dsh registry enable @dsh-external/dsh-ui-whale
+```
+
 ## snapshot0805（v0.1.0）——旧安装方式
 
 ### 路径一：克隆 + link 装进 harness（推荐）
