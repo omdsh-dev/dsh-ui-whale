@@ -1,10 +1,10 @@
 # 安装（组织内成员）
 
-> **版本选择**：`v0.2.0`（默认）面向 DSH 快照 snapshot0806（`snapshots/20260806T160212Z-279244acb0`）；`v0.1.0` 面向 snapshot0805（`snapshots/20260805T134133Z-ce1fc03f95`），按旧方式安装。版本对应详见 [README.md](README.md#版本对应--version-compatibility)。
+> **版本选择**：`v0.3.0`（默认，含睡觉动画）面向 DSH 快照 snapshot0806（`snapshots/20260806T160212Z-279244acb0`）；`v0.2.0` 同为 0806 构建（无睡觉动画）；`v0.1.0` 面向 snapshot0805（`snapshots/20260805T134133Z-ce1fc03f95`），按旧方式安装。版本对应详见 [README.md](README.md#版本对应--version-compatibility)。
 
 前置：**DSH 已构建快照**（`~/.dsh/source/current` 指向含 `lib/` 产物的快照——`cordis` 与各 `@deepseek-ai/dsh-client-*` 的 `link:` 开发依赖从该快照解析）+ `dsh web` 运行中 + **dsh-external 组织读权限**。本插件是**纯客户端插件包**（`dshClient` 行，Node half 为空），安装 = ① 包可被配置树解析 + ② 配置里加一行。
 
-## snapshot0806（v0.2.0）——profile 安装方式
+## snapshot0806（v0.3.0 / v0.2.0）——profile 安装方式
 
 ```sh
 # 1. 克隆私有仓库（需要组织读权限），构建产物已入库，无需构建
@@ -14,7 +14,7 @@ cd dsh-ui-whale && pnpm install
 # 2. 装进 web profile（等价于在 $DSH_HOME/profiles/web 下执行 pnpm add）
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.2.0'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.0'
 ```
 
 配置行（`$DSH_HOME/profiles/web/cordis.patch.yml`，热重载，无需重启）：
