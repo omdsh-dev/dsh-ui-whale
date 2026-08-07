@@ -4,6 +4,7 @@
 export const zh = {
   'title': '像素鲸鱼',
   'mood.idle': '休息中',
+  'mood.sleeping': '睡觉中',
   'mood.thinking': '思考中',
   'mood.working': '工作中',
   'mood.running': '运行中',
@@ -17,6 +18,7 @@ export type WhaleKey = keyof typeof zh
 export const en = {
   'title': 'Pixel whale',
   'mood.idle': 'Resting',
+  'mood.sleeping': 'Sleeping',
   'mood.thinking': 'Thinking',
   'mood.working': 'Working',
   'mood.running': 'Running',

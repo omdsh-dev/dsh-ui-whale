@@ -1,11 +1,12 @@
 /**
  * Animation engine behavior: mood derivation from snapshot signals, tick
  * advancement (idle thump/flutter vs continuous motion, blink cadence, the
- * one-way spout), and the resolved frames. Pure-function tests — no timers.
+ * one-way spout, the sleep delay and Z loop), and the resolved frames.
+ * Pure-function tests — no timers.
  */
 import { describe, expect, it } from 'vitest'
 import {
-  advance, frameOf, initialState, moodKey, moodOf, SPOUT_DURATION,
+  advance, frameOf, initialState, moodKey, moodOf, SLEEP_DELAY_TICKS, SLEEP_HOLD, SPOUT_DURATION,
 } from '../src/client/animation.ts'
 
 /** Run `n` idle ticks and return the tail index each tick. */
@@ -31,7 +32,7 @@ describe('moodOf', () => {
 
 describe('advance / frameOf', () => {
   it('starts at the resting pose', () => {
-    expect(frameOf(initialState())).toEqual({ tail: 0, fin: 0, spout: 0, heart: 0, blink: false })
+    expect(frameOf(initialState())).toEqual({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false })
   })
 
   it('idle mostly rests, then gives one tail thump (single pass, back to rest)', () => {
@@ -121,8 +122,70 @@ describe('advance / frameOf', () => {
     expect(frameOf(s).spout).toBe(0)
   })
 
+  it('falls asleep after SLEEP_DELAY_TICKS of continuous idle and wakes on activity', () => {
+    let s = initialState()
+    // Just below the threshold the whale is still merely idle, no Z.
+    for (let i = 0; i < SLEEP_DELAY_TICKS - 1; i += 1) s = advance(s, 'idle')
+    expect(s.mood).toBe('idle')
+    expect(frameOf(s).sleep).toBe(0)
+    // The next idle tick crosses the 10 s threshold into sleep.
+    s = advance(s, 'idle')
+    expect(s.mood).toBe('sleeping')
+    // Any activity wakes it immediately and clears the Z.
+    s = advance(s, 'thinking')
+    expect(s.mood).toBe('thinking')
+    expect(frameOf(s).sleep).toBe(0)
+    // Staying busy never sleeps.
+    for (let i = 0; i < SLEEP_DELAY_TICKS + 10; i += 1) s = advance(s, 'working')
+    expect(s.mood).toBe('working')
+    expect(frameOf(s).sleep).toBe(0)
+  })
+
+  it('sleeps the Z loop 0-1-2-3-4-5-6-1-2-3-... (resting pose once, then the Z cycles)', () => {
+    let s = initialState()
+    for (let i = 0; i < SLEEP_DELAY_TICKS; i += 1) s = advance(s, 'idle')
+    expect(s.mood).toBe('sleeping')
+    const transitions: number[] = [frameOf(s).sleep]
+    for (let i = 0; i < SLEEP_HOLD * 13 + 1; i += 1) {
+      s = advance(s, 'idle')
+      const f = frameOf(s).sleep
+      if (transitions[transitions.length - 1] !== f) transitions.push(f)
+    }
+    // Frame 0 (the resting pose) plays once as the whale settles, then the Z
+    // frames 1..6 cycle and wrap back to 1 — never back to 0.
+    expect(transitions).toEqual([0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1])
+  })
+
+  it('keeps the fins fluttering and the tail thumping on the idle cadence while asleep', () => {
+    let s = initialState()
+    for (let i = 0; i < SLEEP_DELAY_TICKS; i += 1) s = advance(s, 'idle')
+    expect(s.mood).toBe('sleeping')
+    const tails = new Set<number>()
+    const fins = new Set<number>()
+    for (let i = 0; i < 200; i += 1) {
+      s = advance(s, 'idle')
+      tails.add(frameOf(s).tail)
+      fins.add(frameOf(s).fin)
+    }
+    // The sleeping whale still thumps and flutters (never frozen mid-pose).
+    expect(tails.size).toBeGreaterThan(1)
+    expect(fins.size).toBeGreaterThan(1)
+  })
+
+  it('a click during sleep plays the heart without waking the whale', () => {
+    let s = initialState()
+    for (let i = 0; i < SLEEP_DELAY_TICKS; i += 1) s = advance(s, 'idle')
+    expect(s.mood).toBe('sleeping')
+    // The component re-feeds its own effective mood on click.
+    s = advance(s, s.mood, true)
+    expect(s.mood).toBe('sleeping')
+    expect(frameOf(s).heart).toBe(1)
+    expect(frameOf(s).sleep).toBe(0)
+  })
+
   it('moodKey addresses the locale namespace', () => {
     expect(moodKey('idle')).toBe('mood.idle')
+    expect(moodKey('sleeping')).toBe('mood.sleeping')
     expect(moodKey('spouting')).toBe('mood.spouting')
   })
 

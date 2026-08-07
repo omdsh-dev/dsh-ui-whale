@@ -1,8 +1,8 @@
 /**
  * Whale sprite layering: split the frame set into static body + animated
- * layers (eyes / tail / fins / spout / heart) so the pet can blink, wag,
- * flutter, spout, and show a heart independently of the still pose. Each
- * layer is a list of pixels rendered as CSS box-shadow entries
+ * layers (eyes / tail / fins / spout / heart / sleep-Z) so the pet can blink,
+ * wag, flutter, spout, show a heart, and sleep independently of the still
+ * pose. Each layer is a list of pixels rendered as CSS box-shadow entries
  * (`x y 0 0 var(--whale-cN)`); colors stay CSS variables so the artwork
  * palette lives in the module stylesheet.
  *
@@ -12,17 +12,19 @@
  * one-way water-spout celebration (droplets rising and spreading above the
  * blowhole); BLINK closes both eyes (the two dark pupil pixels turn body
  * blue); HEART_1..3 are the click celebration — a pink heart in the top-left
- * corner growing from small to large. Each animated region is derived from
- * the source frames — the pixels any animation frame changes — so the body
- * layer never paints over motion.
+ * corner growing from small to large; SLEEP_1..6 are the sleeping Z symbol
+ * (gray, rising above the blowhole, shrinking and fading — the body never
+ * changes, so sleep overlays the resting pose). Each animated region is
+ * derived from the source frames — the pixels any animation frame changes —
+ * so the body layer never paints over motion.
  */
 import { FRAMES, SPRITE_WIDTH } from './sprite-data.ts'
 
-/** One sprite pixel: column, row, and palette key (1 dark, 2 body, 3 light, 4 white, 5 pink). */
+/** One sprite pixel: column, row, and palette key (1 dark, 2 body, 3 light, 4 white, 5 pink, 6 gray). */
 export interface Pixel {
   readonly x: number
   readonly y: number
-  readonly c: 1 | 2 | 3 | 4 | 5
+  readonly c: 1 | 2 | 3 | 4 | 5 | 6
 }
 
 /** Palette keys used by the artwork. */
@@ -77,10 +79,11 @@ const TAIL = motionRegion(['TAIL_1', 'TAIL_2', 'TAIL_3'])
 const FIN = motionRegion(['FIN_1', 'FIN_2'])
 const SPOUT = motionRegion(['SPOUT_1', 'SPOUT_2', 'SPOUT_3', 'SPOUT_4', 'SPOUT_5', 'SPOUT_6'])
 const HEART = motionRegion(['HEART_1', 'HEART_2', 'HEART_3'])
+const SLEEP = motionRegion(['SLEEP_1', 'SLEEP_2', 'SLEEP_3', 'SLEEP_4', 'SLEEP_5', 'SLEEP_6'])
 
 /** The still body: STANDARD minus the eye pupils and every motion region. */
 const BODY: readonly Pixel[] = framePixels(FRAMES.STANDARD)
-  .filter(p => !EYE_CELLS.has(`${p.x},${p.y}`) && !TAIL.has(`${p.x},${p.y}`) && !FIN.has(`${p.x},${p.y}`) && !SPOUT.has(`${p.x},${p.y}`) && !HEART.has(`${p.x},${p.y}`))
+  .filter(p => !EYE_CELLS.has(`${p.x},${p.y}`) && !TAIL.has(`${p.x},${p.y}`) && !FIN.has(`${p.x},${p.y}`) && !SPOUT.has(`${p.x},${p.y}`) && !HEART.has(`${p.x},${p.y}`) && !SLEEP.has(`${p.x},${p.y}`))
 
 /** Pixels of one source frame restricted to its animation's motion region. */
 function regionFrame(name: keyof typeof FRAMES, region: ReadonlySet<string>): readonly Pixel[] {
@@ -107,7 +110,12 @@ const HEART_FRAMES: readonly (readonly Pixel[])[] = (
   [undefined, 'HEART_1', 'HEART_2', 'HEART_3'] as const
 ).map(name => name === undefined ? [] : regionFrame(name, HEART))
 
-/** The pet's visible frame: which eye/tail/fin/spout/heart sub-frames are showing right now. */
+/** Sleep-Z layer per frame index (0 = no Z, 1..6 = SLEEP_1..6 rising/shrinking/fading). */
+const SLEEP_FRAMES: readonly (readonly Pixel[])[] = (
+  [undefined, 'SLEEP_1', 'SLEEP_2', 'SLEEP_3', 'SLEEP_4', 'SLEEP_5', 'SLEEP_6'] as const
+).map(name => name === undefined ? [] : regionFrame(name, SLEEP))
+
+/** The pet's visible frame: which eye/tail/fin/spout/heart/sleep sub-frames are showing right now. */
 export interface WhaleFrame {
   /** 0-based index into TAIL_FRAMES; 0 is the resting pose (== STANDARD's tail). */
   readonly tail: number
@@ -117,18 +125,21 @@ export interface WhaleFrame {
   readonly spout: number
   /** 0-based index into HEART_FRAMES; 0 has no heart. */
   readonly heart: number
+  /** 0-based index into SLEEP_FRAMES; 0 has no Z (awake or sleeping pose 0). */
+  readonly sleep: number
   /** Eyes open or closed. */
   readonly blink: boolean
 }
 
-/** Render the complete pixel set for a frame: body + eyes + tail + fins + spout + heart (ordered, no overlaps). */
+/** Render the complete pixel set for a frame: body + eyes + tail + fins + spout + heart + sleep-Z (ordered, no overlaps). */
 export function framePixelsFor(frame: WhaleFrame): readonly Pixel[] {
   const tail = TAIL_FRAMES[frame.tail] ?? []
   const fin = FIN_FRAMES[frame.fin] ?? []
   const spout = SPOUT_FRAMES[frame.spout] ?? []
   const heart = HEART_FRAMES[frame.heart] ?? []
+  const sleep = SLEEP_FRAMES[frame.sleep] ?? []
   const eyes = frame.blink ? EYE_CLOSED : EYE_OPEN
-  return [...BODY, ...eyes, ...tail, ...fin, ...spout, ...heart]
+  return [...BODY, ...eyes, ...tail, ...fin, ...spout, ...heart, ...sleep]
 }
 
 /** Pixel counts per layer (exported for tests and the invariant companion). */
@@ -138,13 +149,15 @@ export const LAYER_SIZES = {
   fin: FIN_FRAMES.map(f => f.length),
   spout: SPOUT_FRAMES.map(f => f.length),
   heart: HEART_FRAMES.map(f => f.length),
+  sleep: SLEEP_FRAMES.map(f => f.length),
   eyeOpen: EYE_OPEN.length,
   eyeClosed: EYE_CLOSED.length,
   tailFrames: TAIL_FRAMES.length,
   finFrames: FIN_FRAMES.length,
   spoutFrames: SPOUT_FRAMES.length,
   heartFrames: HEART_FRAMES.length,
+  sleepFrames: SLEEP_FRAMES.length,
 } as const
 
-/** The resting frame (eyes open, tail/fins/spout/heart in their STANDARD poses). */
-export const RESTING_FRAME: WhaleFrame = { tail: 0, fin: 0, spout: 0, heart: 0, blink: false }
+/** The resting frame (eyes open, tail/fins/spout/heart/sleep in their STANDARD poses). */
+export const RESTING_FRAME: WhaleFrame = { tail: 0, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }

@@ -41,35 +41,41 @@ describe('sprite layers', () => {
   })
 
   it('each tail pose equals its TAIL_k frame exactly', () => {
-    expectEqualsSource({ tail: 1, fin: 0, spout: 0, heart: 0, blink: false }, FRAMES.TAIL_1)
-    expectEqualsSource({ tail: 2, fin: 0, spout: 0, heart: 0, blink: false }, FRAMES.TAIL_2)
-    expectEqualsSource({ tail: 3, fin: 0, spout: 0, heart: 0, blink: false }, FRAMES.TAIL_3)
+    expectEqualsSource({ tail: 1, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.TAIL_1)
+    expectEqualsSource({ tail: 2, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.TAIL_2)
+    expectEqualsSource({ tail: 3, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.TAIL_3)
   })
 
   it('each fin pose equals its FIN_k frame exactly', () => {
-    expectEqualsSource({ tail: 0, fin: 1, spout: 0, heart: 0, blink: false }, FRAMES.FIN_1)
-    expectEqualsSource({ tail: 0, fin: 2, spout: 0, heart: 0, blink: false }, FRAMES.FIN_2)
+    expectEqualsSource({ tail: 0, fin: 1, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.FIN_1)
+    expectEqualsSource({ tail: 0, fin: 2, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.FIN_2)
   })
 
   it('each spout pose equals its SPOUT_k frame exactly', () => {
-    expectEqualsSource({ tail: 0, fin: 0, spout: 1, heart: 0, blink: false }, FRAMES.SPOUT_1)
-    expectEqualsSource({ tail: 0, fin: 0, spout: 3, heart: 0, blink: false }, FRAMES.SPOUT_3)
-    expectEqualsSource({ tail: 0, fin: 0, spout: 6, heart: 0, blink: false }, FRAMES.SPOUT_6)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 1, heart: 0, sleep: 0, blink: false }, FRAMES.SPOUT_1)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 3, heart: 0, sleep: 0, blink: false }, FRAMES.SPOUT_3)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 6, heart: 0, sleep: 0, blink: false }, FRAMES.SPOUT_6)
   })
 
   it('each heart pose equals its HEART_k frame exactly', () => {
-    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 1, blink: false }, FRAMES.HEART_1)
-    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 2, blink: false }, FRAMES.HEART_2)
-    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 3, blink: false }, FRAMES.HEART_3)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 1, sleep: 0, blink: false }, FRAMES.HEART_1)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 2, sleep: 0, blink: false }, FRAMES.HEART_2)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 3, sleep: 0, blink: false }, FRAMES.HEART_3)
+  })
+
+  it('each sleep pose equals its SLEEP_k frame exactly', () => {
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 1, blink: false }, FRAMES.SLEEP_1)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 3, blink: false }, FRAMES.SLEEP_3)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 6, blink: false }, FRAMES.SLEEP_6)
   })
 
   it('blink pose equals the BLINK frame exactly', () => {
-    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, blink: true }, FRAMES.BLINK)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 0, blink: true }, FRAMES.BLINK)
   })
 
   it('tail poses differ from STANDARD only outside the resting pose', () => {
     const rest = gridOf(framePixelsFor(RESTING_FRAME))
-    const tail1 = gridOf(framePixelsFor({ tail: 1, fin: 0, spout: 0, heart: 0, blink: false }))
+    const tail1 = gridOf(framePixelsFor({ tail: 1, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }))
     let diffCells = 0
     for (const [key, c] of tail1) {
       if (rest.get(key) !== c) diffCells += 1
@@ -86,7 +92,7 @@ describe('sprite layers', () => {
 
   it('spout poses add droplets above the blowhole without touching the body', () => {
     const rest = gridOf(framePixelsFor(RESTING_FRAME))
-    const spout6 = gridOf(framePixelsFor({ tail: 0, fin: 0, spout: 6, heart: 0, blink: false }))
+    const spout6 = gridOf(framePixelsFor({ tail: 0, fin: 0, spout: 6, heart: 0, sleep: 0, blink: false }))
     const added: string[] = []
     for (const [key, c] of spout6) {
       if (rest.get(key) !== c) added.push(key)
@@ -102,7 +108,7 @@ describe('sprite layers', () => {
 
   it('heart poses add only pink cells in the top-left over STANDARD-empty cells', () => {
     const rest = gridOf(framePixelsFor(RESTING_FRAME))
-    const heart3 = gridOf(framePixelsFor({ tail: 0, fin: 0, spout: 0, heart: 3, blink: false }))
+    const heart3 = gridOf(framePixelsFor({ tail: 0, fin: 0, spout: 0, heart: 3, sleep: 0, blink: false }))
     const added: string[] = []
     for (const [key, c] of heart3) {
       if (rest.get(key) !== c) added.push(key)
@@ -118,14 +124,34 @@ describe('sprite layers', () => {
     }
   })
 
+  it('sleep poses add only gray Z cells above the head over STANDARD-empty cells', () => {
+    const rest = gridOf(framePixelsFor(RESTING_FRAME))
+    const sleep1 = gridOf(framePixelsFor({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 1, blink: false }))
+    const added: string[] = []
+    for (const [key, c] of sleep1) {
+      if (rest.get(key) !== c) added.push(key)
+    }
+    expect(added.length).toBeGreaterThan(0)
+    // The Z floats above the body (y < 7) where STANDARD is empty, in gray (6).
+    for (const key of added) {
+      const [x, y] = keyXY(key)
+      expect(y).toBeLessThan(7)
+      expect(FRAMES.STANDARD[y]?.[x]).toBe('0')
+      expect(sleep1.get(key)).toBe(6)
+    }
+  })
+
   it('reports consistent layer sizes', () => {
     expect(LAYER_SIZES.body).toBeGreaterThan(0)
     expect(LAYER_SIZES.tailFrames).toBe(4)
     expect(LAYER_SIZES.finFrames).toBe(3)
     expect(LAYER_SIZES.spoutFrames).toBe(7)
     expect(LAYER_SIZES.heartFrames).toBe(4)
+    expect(LAYER_SIZES.sleepFrames).toBe(7)
     // Heart layer: no heart, then the three growing hearts (6/16/27 pixels).
     expect(LAYER_SIZES.heart).toEqual([0, 6, 16, 27])
+    // Sleep layer: no Z, then the Z rising/shrinking/fading (10/10/10/6/5/4).
+    expect(LAYER_SIZES.sleep).toEqual([0, 10, 10, 10, 6, 5, 4])
     expect(LAYER_SIZES.eyeOpen).toBeGreaterThan(0)
     expect(LAYER_SIZES.eyeClosed).toBeGreaterThan(0)
     // The resting pose is index 0 in every animated layer.
@@ -133,6 +159,7 @@ describe('sprite layers', () => {
     expect(RESTING_FRAME.fin).toBe(0)
     expect(RESTING_FRAME.spout).toBe(0)
     expect(RESTING_FRAME.heart).toBe(0)
+    expect(RESTING_FRAME.sleep).toBe(0)
     expect(RESTING_FRAME.blink).toBe(false)
   })
 })

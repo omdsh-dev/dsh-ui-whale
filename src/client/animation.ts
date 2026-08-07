@@ -1,33 +1,48 @@
 /**
  * WhalePet animation driver: turns the conversation snapshot's live state
- * into the pet's current pose (eye / tail / fin / spout frame selection) and a
- * mood label. Pure functions — the component feeds the latest snapshot and
- * a tick counter, this module decides what to show. The tick advances on a
- * fixed interval in the component; all timing decisions live here so the
- * animation rules are unit-testable without timers.
+ * into the pet's current pose (eye / tail / fin / spout / sleep-Z frame
+ * selection) and a mood label. Pure functions — the component feeds the
+ * latest snapshot and a tick counter, this module decides what to show. The
+ * tick advances on a fixed interval in the component; all timing decisions
+ * live here so the animation rules are unit-testable without timers.
  *
  * Behavior: while idle the whale mostly rests — it blinks on a slow cadence
  * and occasionally gives one tail "thump" or one fin flutter (a single pass,
- * then back to rest). While thinking/working/running the tail wags and the
- * fins flutter continuously (faster the busier the mood), and the blink
- * cadence tightens. When a turn settles the whale spouts a water fountain
- * (one-way frame run 0-1-2-3-4-5-6) for a short celebration. A click on the
- * pet requests one heart pass (one-way frame run 0-1-2-3-0 — a pink heart
- * grows from small to large in the top-left corner, then disappears); a
- * second click restarts it.
+ * then back to rest). After SLEEP_DELAY_MS of continuous idle the whale falls
+ * asleep: a gray Z rises above the blowhole, shrinks, and fades on the loop
+ * 0-1-2-3-4-5-6-1-2-3-... (frame 0 is the resting pose played once as the
+ * whale settles, then the Z frames cycle) while the fins keep fluttering and
+ * the tail keeps thumping on the idle cadence; any activity (thinking,
+ * working, running, spouting) wakes it. While thinking/working/running the
+ * tail wags and the fins flutter continuously (faster the busier the mood),
+ * and the blink cadence tightens. When a turn settles the whale spouts a
+ * water fountain (one-way frame run 0-1-2-3-4-5-6) for a short celebration.
+ * A click on the pet requests one heart pass (one-way frame run 0-1-2-3-0 —
+ * a pink heart grows from small to large in the top-left corner, then
+ * disappears); a second click restarts it.
  */
 
 import type { WhaleFrame } from './sprite.ts'
 
 /** The pet's observable moods, from most to least idle. */
-export type WhaleMood = 'idle' | 'thinking' | 'working' | 'running' | 'spouting'
+export type WhaleMood = 'idle' | 'sleeping' | 'thinking' | 'working' | 'running' | 'spouting'
 
 /** One animation tick = one advance call (component drives the cadence). */
 export const TICK_MS = 120
 
+/** Continuous idle before the whale falls asleep (10 s). */
+export const SLEEP_DELAY_MS = 10_000
+
+/** Continuous idle ticks before sleep starts: the first tick past the delay. */
+export const SLEEP_DELAY_TICKS = Math.ceil(SLEEP_DELAY_MS / TICK_MS)
+
+/** Sleep-Z frame hold time in ticks (one dreamy float step). */
+export const SLEEP_HOLD = 3
+
 /** Tail-wag cadence per mood: frame hold time in ticks. */
 const WAG_HOLD: Record<WhaleMood, number> = {
   idle: 6,
+  sleeping: 6,
   thinking: 8,
   working: 3,
   running: 5,
@@ -37,6 +52,7 @@ const WAG_HOLD: Record<WhaleMood, number> = {
 /** Fin-flutter cadence per mood: frame hold time in ticks. */
 const FIN_HOLD: Record<WhaleMood, number> = {
   idle: 5,
+  sleeping: 5,
   thinking: 6,
   working: 2,
   running: 4,
@@ -46,6 +62,7 @@ const FIN_HOLD: Record<WhaleMood, number> = {
 /** Blink cadence per mood: ticks between blinks (0 = never blinks). */
 const BLINK_GAP: Record<WhaleMood, number> = {
   idle: 42,
+  sleeping: 42,
   thinking: 26,
   working: 14,
   running: 20,
@@ -55,6 +72,7 @@ const BLINK_GAP: Record<WhaleMood, number> = {
 /** Spout-droplet cadence per mood: ticks between droplet advances (0 = no spout). */
 const SPOUT_GAP: Record<WhaleMood, number> = {
   idle: 0,
+  sleeping: 0,
   thinking: 0,
   working: 0,
   running: 0,
@@ -100,7 +118,7 @@ export const SPOUT_DURATION = 18
  * The animation state accumulated across ticks.
  */
 export interface WhaleAnimationState {
-  /** Current mood. */
+  /** Current mood (effective: includes the derived 'sleeping'). */
   readonly mood: WhaleMood
   /** Monotonic tick counter (component-driven cadence). */
   readonly tick: number
@@ -128,6 +146,12 @@ export interface WhaleAnimationState {
   readonly heartStep: number
   /** Ticks remaining before the current heart frame advances. */
   readonly heartHold: number
+  /** Consecutive idle ticks (reset by any activity); drives the sleep delay. */
+  readonly idleStreak: number
+  /** Sleep-Z frame position; -1 = awake, 0..6 = the Z loop (0 is the resting pose). */
+  readonly sleepStep: number
+  /** Ticks remaining before the sleep-Z frame advances. */
+  readonly sleepHold: number
 }
 
 /** The initial animation state (resting pose). */
@@ -147,6 +171,9 @@ export function initialState(): WhaleAnimationState {
     spoutHold: 0,
     heartStep: -1,
     heartHold: 0,
+    idleStreak: 0,
+    sleepStep: -1,
+    sleepHold: 0,
   }
 }
 
@@ -165,7 +192,9 @@ export function moodOf(running: boolean, thinking: boolean, toolRunning: boolean
 
 /** Whether the tail wags / fins flutter continuously in this mood (vs the occasional idle pass). */
 function continuousMotion(mood: WhaleMood): boolean {
-  return mood !== 'idle'
+  // Sleeping keeps the idle cadence: the fins keep fluttering and the tail
+  // keeps thumping on their occasional passes, never frozen mid-pose.
+  return mood !== 'idle' && mood !== 'sleeping'
 }
 
 /**
@@ -210,26 +239,61 @@ function advanceLimb(
 /**
  * Advance the animation one tick.
  * @param state - the previous animation state.
- * @param mood - the mood derived from the snapshot (spouting when celebrating).
+ * @param mood - the mood derived from the snapshot (spouting when
+ * celebrating). 'sleeping' is accepted as an input only when the component
+ * re-feeds its own effective mood (a click during sleep); it is treated as
+ * the 'idle' base so the whale stays asleep.
  * @param heartRequested - true when the pet was clicked: (re)arms the one-way
  *   0-1-2-3-0 heart pass from the small heart.
  * @returns the next animation state.
  */
 export function advance(state: WhaleAnimationState, mood: WhaleMood, heartRequested = false): WhaleAnimationState {
-  const continuous = continuousMotion(mood)
+  // The input mood is a base mood (idle/thinking/working/running/spouting);
+  // 'sleeping' is derived below from the continuous-idle streak and can only
+  // arrive as an input when the component re-feeds its own effective mood.
+  const base = mood === 'sleeping' ? 'idle' : mood
+  const idle = base === 'idle'
+  // Cap the streak: once the sleep threshold is reached, extra idle ticks add
+  // nothing (the whale is already asleep).
+  const idleStreak = idle ? Math.min(state.idleStreak + 1, SLEEP_DELAY_TICKS) : 0
+  // Sleep is sticky while idle: once asleep, a click (or any idle re-feed)
+  // must not wake the whale; only activity (a non-idle base) wakes it.
+  const asleep = state.sleepStep >= 0
+  const effective: WhaleMood = idle && (asleep || idleStreak >= SLEEP_DELAY_TICKS) ? 'sleeping' : base
+  const continuous = continuousMotion(effective)
 
   const tail = advanceLimb(
     state.wagStep, state.wagHold, state.thumpCountdown,
-    WAG_SEQUENCE, WAG_HOLD[mood], IDLE_THUMP_GAP, continuous,
+    WAG_SEQUENCE, WAG_HOLD[effective], IDLE_THUMP_GAP, continuous,
   )
   const fin = advanceLimb(
     state.finStep, state.finHold, state.flutterCountdown,
-    FIN_SEQUENCE, FIN_HOLD[mood], IDLE_FLUTTER_GAP, continuous,
+    FIN_SEQUENCE, FIN_HOLD[effective], IDLE_FLUTTER_GAP, continuous,
   )
+
+  // Sleep-Z: one-way loop 0-1-2-3-4-5-6-1-2-3-... while asleep — the resting
+  // pose (0) plays once as the whale settles, then the Z frames cycle (6
+  // wraps back to 1, never to 0). Activity clears the Z.
+  let sleepStep = state.sleepStep
+  let sleepHold = state.sleepHold
+  if (effective === 'sleeping') {
+    if (sleepStep < 0) {
+      sleepStep = 0
+      sleepHold = SLEEP_HOLD - 1
+    } else if (sleepHold <= 0) {
+      sleepStep = sleepStep >= 6 ? 1 : sleepStep + 1
+      sleepHold = SLEEP_HOLD - 1
+    } else {
+      sleepHold -= 1
+    }
+  } else {
+    sleepStep = -1
+    sleepHold = 0
+  }
 
   // Spout: one-way droplet run only while the celebration mood is active; the
   // last frame holds until the component ends the celebration.
-  const spoutGap = SPOUT_GAP[mood]
+  const spoutGap = SPOUT_GAP[effective]
   let spoutStep = -1
   let spoutHold = 0
   if (spoutGap > 0) {
@@ -250,7 +314,7 @@ export function advance(state: WhaleAnimationState, mood: WhaleMood, heartReques
   let blinkCountdown = state.blinkCountdown
   if (state.blinkCountdown <= 0) {
     blink = true
-    blinkCountdown = BLINK_GAP[mood] - 1
+    blinkCountdown = BLINK_GAP[effective] - 1
   } else {
     blinkCountdown = state.blinkCountdown - 1
   }
@@ -276,7 +340,7 @@ export function advance(state: WhaleAnimationState, mood: WhaleMood, heartReques
   }
 
   return {
-    mood,
+    mood: effective,
     tick: state.tick + 1,
     wagStep: tail.step,
     wagHold: tail.hold,
@@ -290,6 +354,9 @@ export function advance(state: WhaleAnimationState, mood: WhaleMood, heartReques
     spoutHold,
     heartStep,
     heartHold,
+    idleStreak,
+    sleepStep,
+    sleepHold,
   }
 }
 
@@ -304,6 +371,7 @@ export function frameOf(state: WhaleAnimationState): WhaleFrame {
     fin: finIndex,
     spout: spoutIndex,
     heart: heartIndex,
+    sleep: state.sleepStep < 0 ? 0 : state.sleepStep,
     blink: state.blink,
   }
 }
