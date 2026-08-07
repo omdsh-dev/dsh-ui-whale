@@ -10,7 +10,7 @@
  * and occasionally gives one tail "thump" or one fin flutter (a single pass,
  * then back to rest). After SLEEP_DELAY_MS of continuous idle the whale falls
  * asleep: a gray Z rises above the blowhole, shrinks, and fades on the loop
- * 0-1-2-3-4-5-6-1-2-3-... (frame 0 is the resting pose played once as the
+ * 0-1-2-3-4-5-1-2-3-4-5-1-... (frame 0 is the resting pose played once as the
  * whale settles, then the Z frames cycle) while the fins keep fluttering and
  * the tail keeps thumping on the idle cadence; any activity (thinking,
  * working, running, spouting) wakes it. While thinking/working/running the
@@ -87,9 +87,9 @@ const IDLE_FLUTTER_GAP = 60
 
 /**
  * Tail pose sequence for one full wag pass (resting pose is index 0):
- * 0-1-2-3-2-1-0 — the user's forward-and-back rule for multi-frame actions.
+ * 0-1-2-3-4-3-2-1-0 — the user's forward-and-back rule for multi-frame actions.
  */
-const WAG_SEQUENCE: readonly number[] = [1, 2, 3, 2, 1]
+const WAG_SEQUENCE: readonly number[] = [1, 2, 3, 4, 3, 2, 1]
 
 /** Fin pose sequence for one flutter pass (resting pose is index 0): 0-1-2-1-0. */
 const FIN_SEQUENCE: readonly number[] = [1, 2, 1]
@@ -148,7 +148,7 @@ export interface WhaleAnimationState {
   readonly heartHold: number
   /** Consecutive idle ticks (reset by any activity); drives the sleep delay. */
   readonly idleStreak: number
-  /** Sleep-Z frame position; -1 = awake, 0..6 = the Z loop (0 is the resting pose). */
+  /** Sleep-Z frame position; -1 = awake, 0..5 = the Z loop (0 is the resting pose). */
   readonly sleepStep: number
   /** Ticks remaining before the sleep-Z frame advances. */
   readonly sleepHold: number
@@ -271,9 +271,9 @@ export function advance(state: WhaleAnimationState, mood: WhaleMood, heartReques
     FIN_SEQUENCE, FIN_HOLD[effective], IDLE_FLUTTER_GAP, continuous,
   )
 
-  // Sleep-Z: one-way loop 0-1-2-3-4-5-6-1-2-3-... while asleep — the resting
-  // pose (0) plays once as the whale settles, then the Z frames cycle (6
-  // wraps back to 1, never to 0). Activity clears the Z.
+  // Sleep-Z: one-way loop 0-1-2-3-4-5-1-2-3-4-5-1-... while asleep — the
+  // resting pose (0) plays once as the whale settles, then the Z frames
+  // cycle (5 wraps back to 1, never to 0). Activity clears the Z.
   let sleepStep = state.sleepStep
   let sleepHold = state.sleepHold
   if (effective === 'sleeping') {
@@ -281,7 +281,7 @@ export function advance(state: WhaleAnimationState, mood: WhaleMood, heartReques
       sleepStep = 0
       sleepHold = SLEEP_HOLD - 1
     } else if (sleepHold <= 0) {
-      sleepStep = sleepStep >= 6 ? 1 : sleepStep + 1
+      sleepStep = sleepStep >= 5 ? 1 : sleepStep + 1
       sleepHold = SLEEP_HOLD - 1
     } else {
       sleepHold -= 1

@@ -44,6 +44,7 @@ describe('sprite layers', () => {
     expectEqualsSource({ tail: 1, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.TAIL_1)
     expectEqualsSource({ tail: 2, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.TAIL_2)
     expectEqualsSource({ tail: 3, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.TAIL_3)
+    expectEqualsSource({ tail: 4, fin: 0, spout: 0, heart: 0, sleep: 0, blink: false }, FRAMES.TAIL_4)
   })
 
   it('each fin pose equals its FIN_k frame exactly', () => {
@@ -66,7 +67,7 @@ describe('sprite layers', () => {
   it('each sleep pose equals its SLEEP_k frame exactly', () => {
     expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 1, blink: false }, FRAMES.SLEEP_1)
     expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 3, blink: false }, FRAMES.SLEEP_3)
-    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 6, blink: false }, FRAMES.SLEEP_6)
+    expectEqualsSource({ tail: 0, fin: 0, spout: 0, heart: 0, sleep: 5, blink: false }, FRAMES.SLEEP_5)
   })
 
   it('blink pose equals the BLINK frame exactly', () => {
@@ -143,15 +144,15 @@ describe('sprite layers', () => {
 
   it('reports consistent layer sizes', () => {
     expect(LAYER_SIZES.body).toBeGreaterThan(0)
-    expect(LAYER_SIZES.tailFrames).toBe(4)
+    expect(LAYER_SIZES.tailFrames).toBe(5)
     expect(LAYER_SIZES.finFrames).toBe(3)
     expect(LAYER_SIZES.spoutFrames).toBe(7)
     expect(LAYER_SIZES.heartFrames).toBe(4)
-    expect(LAYER_SIZES.sleepFrames).toBe(7)
+    expect(LAYER_SIZES.sleepFrames).toBe(6)
     // Heart layer: no heart, then the three growing hearts (6/16/27 pixels).
     expect(LAYER_SIZES.heart).toEqual([0, 6, 16, 27])
-    // Sleep layer: no Z, then the Z rising/shrinking/fading (10/10/10/6/5/4).
-    expect(LAYER_SIZES.sleep).toEqual([0, 10, 10, 10, 6, 5, 4])
+    // Sleep layer: no Z, then the Z rising/shrinking/fading (14/14/15/12/15).
+    expect(LAYER_SIZES.sleep).toEqual([0, 14, 14, 15, 12, 15])
     expect(LAYER_SIZES.eyeOpen).toBeGreaterThan(0)
     expect(LAYER_SIZES.eyeClosed).toBeGreaterThan(0)
     // The resting pose is index 0 in every animated layer.

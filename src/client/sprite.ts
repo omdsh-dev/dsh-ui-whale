@@ -12,7 +12,7 @@
  * one-way water-spout celebration (droplets rising and spreading above the
  * blowhole); BLINK closes both eyes (the two dark pupil pixels turn body
  * blue); HEART_1..3 are the click celebration — a pink heart in the top-left
- * corner growing from small to large; SLEEP_1..6 are the sleeping Z symbol
+ * corner growing from small to large; SLEEP_1..5 are the sleeping Z symbol
  * (gray, rising above the blowhole, shrinking and fading — the body never
  * changes, so sleep overlays the resting pose). Each animated region is
  * derived from the source frames — the pixels any animation frame changes —
@@ -75,11 +75,11 @@ const EYE_CLOSED: readonly Pixel[] = [
   { x: 7, y: 14, c: 2 }, { x: 14, y: 14, c: 2 },
 ]
 
-const TAIL = motionRegion(['TAIL_1', 'TAIL_2', 'TAIL_3'])
+const TAIL = motionRegion(['TAIL_1', 'TAIL_2', 'TAIL_3', 'TAIL_4'])
 const FIN = motionRegion(['FIN_1', 'FIN_2'])
 const SPOUT = motionRegion(['SPOUT_1', 'SPOUT_2', 'SPOUT_3', 'SPOUT_4', 'SPOUT_5', 'SPOUT_6'])
 const HEART = motionRegion(['HEART_1', 'HEART_2', 'HEART_3'])
-const SLEEP = motionRegion(['SLEEP_1', 'SLEEP_2', 'SLEEP_3', 'SLEEP_4', 'SLEEP_5', 'SLEEP_6'])
+const SLEEP = motionRegion(['SLEEP_1', 'SLEEP_2', 'SLEEP_3', 'SLEEP_4', 'SLEEP_5'])
 
 /** The still body: STANDARD minus the eye pupils and every motion region. */
 const BODY: readonly Pixel[] = framePixels(FRAMES.STANDARD)
@@ -90,9 +90,9 @@ function regionFrame(name: keyof typeof FRAMES, region: ReadonlySet<string>): re
   return framePixels(FRAMES[name]).filter(p => region.has(`${p.x},${p.y}`))
 }
 
-/** Tail layer per pose index (0 = STANDARD resting pose, 1..3 = TAIL_1..3). */
+/** Tail layer per pose index (0 = STANDARD resting pose, 1..4 = TAIL_1..4). */
 const TAIL_FRAMES: readonly (readonly Pixel[])[] = (
-  ['STANDARD', 'TAIL_1', 'TAIL_2', 'TAIL_3'] as const
+  ['STANDARD', 'TAIL_1', 'TAIL_2', 'TAIL_3', 'TAIL_4'] as const
 ).map(name => regionFrame(name, TAIL))
 
 /** Fin layer per pose index (0 = STANDARD resting pose, 1..2 = FIN_1..2). */
@@ -110,9 +110,9 @@ const HEART_FRAMES: readonly (readonly Pixel[])[] = (
   [undefined, 'HEART_1', 'HEART_2', 'HEART_3'] as const
 ).map(name => name === undefined ? [] : regionFrame(name, HEART))
 
-/** Sleep-Z layer per frame index (0 = no Z, 1..6 = SLEEP_1..6 rising/shrinking/fading). */
+/** Sleep-Z layer per frame index (0 = no Z, 1..5 = SLEEP_1..5 rising/shrinking/fading). */
 const SLEEP_FRAMES: readonly (readonly Pixel[])[] = (
-  [undefined, 'SLEEP_1', 'SLEEP_2', 'SLEEP_3', 'SLEEP_4', 'SLEEP_5', 'SLEEP_6'] as const
+  [undefined, 'SLEEP_1', 'SLEEP_2', 'SLEEP_3', 'SLEEP_4', 'SLEEP_5'] as const
 ).map(name => name === undefined ? [] : regionFrame(name, SLEEP))
 
 /** The pet's visible frame: which eye/tail/fin/spout/heart/sleep sub-frames are showing right now. */

@@ -49,14 +49,14 @@ describe('advance / frameOf', () => {
     }
     if (run > 0) nonRestRuns.push(run)
     expect(nonRestRuns.length).toBeGreaterThanOrEqual(1)
-    // A single pass is at most WAG_SEQUENCE.length frames * hold, well under 40 ticks.
-    expect(Math.max(...nonRestRuns)).toBeLessThan(40)
-    // The pass moves forward then back: 1-2-3-2-1 (each pose held a few ticks).
+    // A single pass is at most WAG_SEQUENCE.length frames * hold, well under 60 ticks.
+    expect(Math.max(...nonRestRuns)).toBeLessThan(60)
+    // The pass moves forward then back: 1-2-3-4-3-2-1 (each pose held a few ticks).
     const poses: number[] = []
     for (const t of trace) {
       if (t !== 0 && poses[poses.length - 1] !== t) poses.push(t)
     }
-    expect(poses).toEqual([1, 2, 3, 2, 1])
+    expect(poses).toEqual([1, 2, 3, 4, 3, 2, 1])
   })
 
   it('idle also flutters the fins occasionally (single pass, back to rest)', () => {
@@ -141,7 +141,7 @@ describe('advance / frameOf', () => {
     expect(frameOf(s).sleep).toBe(0)
   })
 
-  it('sleeps the Z loop 0-1-2-3-4-5-6-1-2-3-... (resting pose once, then the Z cycles)', () => {
+  it('sleeps the Z loop 0-1-2-3-4-5-1-2-3-4-5-1-... (resting pose once, then the Z cycles)', () => {
     let s = initialState()
     for (let i = 0; i < SLEEP_DELAY_TICKS; i += 1) s = advance(s, 'idle')
     expect(s.mood).toBe('sleeping')
@@ -152,8 +152,8 @@ describe('advance / frameOf', () => {
       if (transitions[transitions.length - 1] !== f) transitions.push(f)
     }
     // Frame 0 (the resting pose) plays once as the whale settles, then the Z
-    // frames 1..6 cycle and wrap back to 1 — never back to 0.
-    expect(transitions).toEqual([0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1])
+    // frames 1..5 cycle and wrap back to 1 — never back to 0.
+    expect(transitions).toEqual([0, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3])
   })
 
   it('keeps the fins fluttering and the tail thumping on the idle cadence while asleep', () => {
