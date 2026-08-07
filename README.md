@@ -22,9 +22,9 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 各动作 GIF：
 
-![摆尾巴](docs/摆尾巴.gif) ![摆腹鳍](docs/摆腹鳍.gif)
+<img src="docs/摆尾巴.gif" alt="摆尾巴" width="200"> <img src="docs/摆腹鳍.gif" alt="摆腹鳍" width="200">
 
-![喷水花](docs/喷水花.gif) ![冒爱心](docs/冒爱心.gif) ![睡觉](docs/睡觉.gif)
+<img src="docs/喷水花.gif" alt="喷水花" width="200"> <img src="docs/冒爱心.gif" alt="冒爱心" width="200"> <img src="docs/睡觉.gif" alt="睡觉" width="200">
 
 > 完整视频：[docs/dsh-ui-whale-demo.mp4](docs/dsh-ui-whale-demo.mp4)
 
