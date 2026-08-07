@@ -26,7 +26,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 ![喷水花](docs/喷水花.gif) ![冒爱心](docs/冒爱心.gif) ![睡觉](docs/睡觉.gif)
 
-> 完整视频：[docs/dsh-ui-whale-demo.mp4](docs/dsh-ui-whale-demo.mp4)、[docs/dsh-ui-whale-sleep.mp4](docs/dsh-ui-whale-sleep.mp4)
+> 完整视频：[docs/dsh-ui-whale-demo.mp4](docs/dsh-ui-whale-demo.mp4)
 
 ## 它做什么
 
