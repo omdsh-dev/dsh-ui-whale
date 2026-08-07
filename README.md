@@ -2,6 +2,17 @@
 
 DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧）常驻一只小鲸鱼，随会话快照实时反应——**零核心改动**。
 
+## 版本对应 / Version compatibility
+
+构建产物随 DSH 快照版本更新，安装时按快照选择对应版本：
+
+| 插件版本 | DSH 快照 | 说明 |
+| --- | --- | --- |
+| `v0.1.0` | `snapshots/20260805T134133Z-ce1fc03f95`（snapshot0805） | 旧构建，按旧安装方式（`~/.dsh/config.yaml` + `pnpm add -w link:`） |
+| `v0.2.0`（默认） | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 新构建，按新安装方式（`dsh plugin --profile web add` + profile `cordis.patch.yml`） |
+
+> git 依赖方式固定 tag：`pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.2.0'`（0805 用户用 `#v0.1.0`）。
+
 ## 演示 Demo
 
 <video src="https://raw.githubusercontent.com/dsh-external/dsh-ui-whale/main/docs/dsh-ui-whale-demo.mp4" controls width="360"></video>
