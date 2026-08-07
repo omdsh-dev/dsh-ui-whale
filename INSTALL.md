@@ -78,3 +78,15 @@ pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.1.0'
 ## 验证
 
 会话标题栏（标题行右侧）出现像素鲸鱼：空闲时眨眼/偶尔摆尾/动胸鳍；模型思考或工具运行时尾巴持续摆动、胸鳍持续扑动；一个回合完成时头顶喷出水花（单向 0-1-2-3-4-5-6）；点击鲸鱼时左上角冒出一颗从小变大的粉色爱心再消失（单向 0-1-2-3-0）。
+
+## 演示
+
+![dsh-ui-whale 完整演示](docs/dsh-ui-whale-demo.gif)
+
+各动作 GIF：
+
+<img src="docs/眨眼.gif" alt="眨眼" width="200"> <img src="docs/摆尾巴.gif" alt="摆尾巴" width="200"> <img src="docs/摆腹鳍.gif" alt="摆腹鳍" width="200">
+
+<img src="docs/喷水花.gif" alt="喷水花" width="200"> <img src="docs/冒爱心.gif" alt="冒爱心" width="200"> <img src="docs/睡觉.gif" alt="睡觉" width="200">
+
+> 完整视频：[docs/dsh-ui-whale-demo.mp4](docs/dsh-ui-whale-demo.mp4)
