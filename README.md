@@ -22,7 +22,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 各动作 GIF：
 
-<img src="docs/摆尾巴.gif" alt="摆尾巴" width="200"> <img src="docs/摆腹鳍.gif" alt="摆腹鳍" width="200">
+<img src="docs/眨眼.gif" alt="眨眼" width="200"> <img src="docs/摆尾巴.gif" alt="摆尾巴" width="200"> <img src="docs/摆腹鳍.gif" alt="摆腹鳍" width="200">
 
 <img src="docs/喷水花.gif" alt="喷水花" width="200"> <img src="docs/冒爱心.gif" alt="冒爱心" width="200"> <img src="docs/睡觉.gif" alt="睡觉" width="200">
 
@@ -45,14 +45,29 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 ## 安装（组织内成员）
 
-见 [INSTALL.md](INSTALL.md)。要点：克隆仓库 → `pnpm install` → 把包装进 harness 依赖链 → 在 `~/.dsh/config.yaml` 加一行配置 → 重启 `dsh web`。
+完整步骤见 [INSTALL.md](INSTALL.md)。两条通道任选其一（互斥，勿同时用）：
 
-配置行：
+**官方 profile 通道**（0806 默认，配置行热重载，无需重启）：
+
+```sh
+git clone https://github.com/dsh-external/dsh-ui-whale.git
+cd dsh-ui-whale && pnpm install
+dsh plugin --profile web add link:/path/to/dsh-ui-whale
+```
+
+`$DSH_HOME/profiles/web/cordis.patch.yml` 配置行：
 
 ```yaml
 - insert:
     - id: dsh-ui-whale
       name: '@dsh-external/dsh-ui-whale'
+```
+
+**registry 通道**（需 DSH 已集成 plugin-registry，`dsh registry` 可用；清单已满足 registry id 校验）：
+
+```sh
+dsh registry install /path/to/dsh-ui-whale   # 或打包后的 dsh-ui-whale.tgz
+dsh registry enable @dsh-external/dsh-ui-whale
 ```
 
 ## 开发
