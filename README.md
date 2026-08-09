@@ -14,7 +14,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 | `v0.3.1` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 睡觉 Z 改 5 帧循环 `0-1-2-3-4-5-1-…`；尾巴加一帧改 `0-1-2-3-4-3-2-1-0` |
 | `v0.3.2`（默认） | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
 
-> **兼容性说明**：上表构建均基于 snapshot0806 开发，同时兼容 snapshot0807（`snapshots/20260807T130646Z-e8a0f1a758`）——0807 用户直接安装默认版本（`v0.3.2`）即可。
+> **兼容性说明**：上表构建均基于 snapshot0806 开发，同时兼容 snapshot0807（`snapshots/20260807T130646Z-e8a0f1a758`）与 snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）——0807/0808 用户直接安装默认版本（`v0.3.2`）即可。
 
 > git 依赖方式固定 tag：`pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.2'`（0805 用户用 `#v0.1.0`）。
 
