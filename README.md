@@ -12,11 +12,12 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 | `v0.2.0` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 0806 新构建，按新安装方式 |
 | `v0.3.0` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 0806 构建 + 睡觉动画（连续空闲 10 s 入睡） |
 | `v0.3.1` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 睡觉 Z 改 5 帧循环 `0-1-2-3-4-5-1-…`；尾巴加一帧改 `0-1-2-3-4-3-2-1-0` |
-| `v0.3.2`（默认） | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
+| `v0.3.2` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
+| `v0.3.3`（默认） | `snapshots/20260810T155924Z-8ec407cd64`（snapshot0810） | 兼容性构建：客户端插件元数据从顶层 `dshClient` 迁移为嵌套 `dsh.client`（0810 的 ClientModuleHostService 只读该字段；顶层 `dshClient` 被静默忽略），inject/platform 原样保留 |
 
-> **兼容性说明**：上表构建均基于 snapshot0806 开发，同时兼容 snapshot0807（`snapshots/20260807T130646Z-e8a0f1a758`）、snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）与 snapshot0809（`snapshots/20260809T140917Z-a6bb5a95ba`）——0807/0808/0809 用户直接安装默认版本（`v0.3.2`）即可。
+> **兼容性说明**：上表构建均基于 snapshot0806 开发，同时兼容 snapshot0807（`snapshots/20260807T130646Z-e8a0f1a758`）、snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）、snapshot0809（`snapshots/20260809T140917Z-a6bb5a95ba`）与 snapshot0810（`snapshots/20260810T155924Z-8ec407cd64`）——0807/0808/0809/0810 用户直接安装默认版本（`v0.3.3`）即可。
 
-> git 依赖方式固定 tag：`pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.2'`（0805 用户用 `#v0.1.0`）。
+> git 依赖方式固定 tag：`pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.3'`（0810 用户；0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
 
 ## 0809 兼容要点（snapshot0809，实机验证）
 
@@ -24,6 +25,11 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 - **加载机制变化**：0809 重构了客户端插件机制——旧的 `dsh.plugin.json` 清单 + `resolveClientPath`（`packages/plugin/plugin`）已删除，改为 **package.json 的 `dshClient` 声明**（`platform: 'web'`，可选 `inject`/`immediately`）+ `exports["./client"]` 指向构建产物；宿主扫描 loader 条目组成 boot 图，Web 端从 `/plugins/<id>/client.js` 拉取。本插件 package.json 已满足该声明，无需改动。
 - 本插件使用的槽位 `conversation.session.header.actions`（list/session）在 0809 上仍由官方 `ui-conversation` 声明，owner 契约未变；`useSession` 会话快照契约未变。
 - **构建要求**：0809 宿主在激活时校验 `dshClient` 包的构建产物，缺失会抛 `ClientPackageCompositionError` 并**拒绝启动 `dsh web`**——升级快照或改源码后必须重新 `pnpm run build` 再启动，否则浏览器拉到的是旧 `lib/client.js`。
+
+## 0810 兼容要点（snapshot0810，实机验证）
+
+- **元数据发现变化**：0810 的 ClientModuleHostService 在启动时扫描已加载插件的 package.json，但只读**嵌套 `dsh.client`**（`packages/client/modules/src/index.ts` 的 `resolveMeta`，`pkg.dsh.client`）；顶层 `dshClient` 字段读不到会静默丢出 boot 图——无日志、无报错，"启动顺利但插件全没"。本插件已从顶层 `dshClient` 迁移为嵌套 `dsh.client`（inject/platform 原样保留），0810 实机验证 `window.__DSH_BOOT__` 清单包含本插件、鲸鱼各动画与爱心互动正常。
+- **无需重构建**：`lib/client.js` 构建产物不变，package.json 不参与编译；symlink 安装改源仓库即生效，无需重装。
 
 ## 演示 Demo
 
