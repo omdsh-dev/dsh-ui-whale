@@ -8,14 +8,14 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 | 插件版本 | DSH 快照 | 说明 |
 | --- | --- | --- |
-| `v0.1.0` | `snapshots/20260805T134133Z-ce1fc03f95`（snapshot0805） | 旧构建，按旧安装方式（`~/.dsh/config.yaml` + `pnpm add -w link:`） |
-| `v0.2.0` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 0806 新构建，按新安装方式 |
-| `v0.3.0` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 0806 构建 + 睡觉动画（连续空闲 10 s 入睡） |
-| `v0.3.1` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 睡觉 Z 改 5 帧循环 `0-1-2-3-4-5-1-…`；尾巴加一帧改 `0-1-2-3-4-3-2-1-0` |
-| `v0.3.2` | `snapshots/20260806T160212Z-279244acb0`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
-| `v0.3.3`（默认） | `snapshots/20260810T155924Z-8ec407cd64`（snapshot0810） | 兼容性构建：客户端插件元数据从顶层 `dshClient` 迁移为嵌套 `dsh.client`（0810 的 ClientModuleHostService 只读该字段；顶层 `dshClient` 被静默忽略），inject/platform 原样保留 |
+| `v0.1.0` | `snapshots/20260805T134133Z`（snapshot0805） | 旧构建，按旧安装方式（`~/.dsh/config.yaml` + `pnpm add -w link:`） |
+| `v0.2.0` | `snapshots/20260806T160212Z`（snapshot0806） | 0806 新构建，按新安装方式 |
+| `v0.3.0` | `snapshots/20260806T160212Z`（snapshot0806） | 0806 构建 + 睡觉动画（连续空闲 10 s 入睡） |
+| `v0.3.1` | `snapshots/20260806T160212Z`（snapshot0806） | 睡觉 Z 改 5 帧循环 `0-1-2-3-4-5-1-…`；尾巴加一帧改 `0-1-2-3-4-3-2-1-0` |
+| `v0.3.2` | `snapshots/20260806T160212Z`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
+| `v0.3.3`（默认） | `snapshots/20260810T155924Z`（snapshot0810） | 兼容性构建：客户端插件元数据从顶层 `dshClient` 迁移为嵌套 `dsh.client`（0810 的 ClientModuleHostService 只读该字段；顶层 `dshClient` 被静默忽略），inject/platform 原样保留 |
 
-> **兼容性说明**：上表构建均基于 snapshot0806 开发，同时兼容 snapshot0807（`snapshots/20260807T130646Z-e8a0f1a758`）、snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）、snapshot0809（`snapshots/20260809T140917Z-a6bb5a95ba`）与 snapshot0810（`snapshots/20260810T155924Z-8ec407cd64`）——0807/0808/0809/0810 用户直接安装默认版本（`v0.3.3`）即可。
+> **兼容性说明**：上表构建均基于 snapshot0806 开发，同时兼容 snapshot0807（`snapshots/20260807T130646Z`）、snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）与 snapshot0810（`snapshots/20260810T155924Z`）——0807/0808/0809/0810 用户直接安装默认版本（`v0.3.3`）即可。
 
 > git 依赖方式固定 tag：`pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.3'`（0810 用户；0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
 
