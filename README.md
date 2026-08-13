@@ -1,5 +1,7 @@
 # @dsh-external/dsh-ui-whale
 
+**简体中文** | [English](./README.en.md)
+
 DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧）常驻一只小鲸鱼，随会话快照实时反应——**零核心改动**。
 
 ## 版本对应 / Version compatibility
