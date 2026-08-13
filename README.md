@@ -19,7 +19,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 > **npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版；`npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` 可访问指定版本并启动，lib 生产模式），同时保持兼容 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版）。实测（npm rc.5 基线）：`dsh web` 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-external/dsh-ui-whale`（inject: `dsh-client-locale`/`dsh-client-runtime`/`dsh-client-ui-conversation`），`/plugins/@dsh-external/dsh-ui-whale/client.js` 返回 200；src 对 rc.5 基线构建产物 typecheck 全绿（本插件已把 cordis 类型导入与 peer 迁移至 `@deepseek-ai/cordis`，见下）。注意：0811 起 vendored cordis 更名为 `@deepseek-ai/cordis`（npm 发版不再发布 `cordis` 名义的 vendored 包），本插件已迁移（peer 声明 `@deepseek-ai/cordis: ^4.0.1-rc.1`，npm rc.5 基线上为 `4.0.1-rc.4`），纯 `npm install` 不再报 ERESOLVE。
 
-> git 依赖方式固定 tag：`pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.3'`（0810/0811 用户；0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
+> git 依赖方式固定 tag：`pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.3'`（0810/0811 用户；0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
 
 ## 0809 兼容要点（snapshot0809，实机验证）
 
@@ -71,14 +71,14 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 - 分层由帧数据自动推导：每个动画区域 = 该动作任一帧相对静止姿势变化的单元格集合，组合姿势逐像素还原原图（有测试钉住）。
 - 动画引擎是纯 tick 状态机（`src/client/animation.ts`），情绪由会话快照的 running / 推理 partial / 运行中工具推导；睡觉由连续空闲 tick 数（10 s）推导。
 
-## 安装（组织内成员）
+## 安装
 
 完整步骤见 [INSTALL.md](INSTALL.md)。两条通道任选其一（互斥，勿同时用）：
 
 **官方 profile 通道**（0806 默认，配置行热重载，无需重启）：
 
 ```sh
-git clone https://github.com/dsh-external/dsh-ui-whale.git
+git clone https://github.com/lhh010/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 ```
