@@ -1,8 +1,8 @@
 # 安装（组织内成员）
 
-> **版本选择**：`v0.3.3`（默认，含睡觉动画）面向 DSH 快照 snapshot0810（`snapshots/20260810T155924Z`），同时兼容 snapshot0811（`snapshots/20260811T152241Z`）；`v0.3.2`（含睡觉动画）面向 snapshot0806（`snapshots/20260806T160212Z`）；`v0.2.0` 同为 0806 构建（无睡觉动画）；`v0.1.0` 面向 snapshot0805（`snapshots/20260805T134133Z`），按旧方式安装。以上构建同时兼容 snapshot0807（`snapshots/20260807T130646Z`）、snapshot0808（`snapshots/20260808T121140Z`）与 snapshot0809（`snapshots/20260809T140917Z`）——0807~0811 用户直接安装默认版本即可。版本对应详见 [README.md](README.md#版本对应--version-compatibility)。
+> **版本选择**：`v0.3.3`（默认，含睡觉动画）面向 DSH 快照 snapshot0810（`snapshots/20260810T155924Z`），同时兼容 snapshot0811（`snapshots/20260811T152241Z`）与最终快照 snapshot0812（`snapshots/20260812T172954Z-final`）；`v0.3.2`（含睡觉动画）面向 snapshot0806（`snapshots/20260806T160212Z`）；`v0.2.0` 同为 0806 构建（无睡觉动画）；`v0.1.0` 面向 snapshot0805（`snapshots/20260805T134133Z`），按旧方式安装。以上构建同时兼容 snapshot0807（`snapshots/20260807T130646Z`）、snapshot0808（`snapshots/20260808T121140Z`）与 snapshot0809（`snapshots/20260809T140917Z`）——0807~0812 用户直接安装默认版本即可。版本对应详见 [README.md](README.md#版本对应--version-compatibility)。
 
-> **npm 发版**：`v0.3.3` 兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.2`（即 snapshot0811 的 npm 发版），实测运行/类型/启动清单通过。0811 起 vendored cordis 更名为 `@deepseek-ai/cordis@4.0.1-rc.1`——纯 `npm install` 若报 peer 冲突（`cordis ^4.0.0-rc.7` 与 npm 发版不再以 `cordis` 名义发布 vendored 包不匹配），加 `--legacy-peer-deps` 临时绕过；建议将 peer 与类型导入迁移至 `@deepseek-ai/cordis`（见 README 0811 兼容要点）。经 `dsh plugin`/pnpm 安装自动处理。
+> **npm 发版**：`v0.3.3` 兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版）与 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版），实测运行/类型/启动清单通过。0811 起 vendored cordis 更名为 `@deepseek-ai/cordis`——本插件已把类型导入与 peer 迁移至 `@deepseek-ai/cordis`（`^4.0.1-rc.1`，npm rc.5 基线上为 `4.0.1-rc.4`），纯 `npm install` 不再报 ERESOLVE。经 `dsh plugin`/pnpm 安装自动处理。
 
 前置：**DSH 已构建快照**（`~/.dsh/source/current` 指向含 `lib/` 产物的快照——`cordis` 与各 `@deepseek-ai/dsh-client-*` 的 `link:` 开发依赖从该快照解析）+ `dsh web` 运行中 + **dsh-external 组织读权限**。本插件是**纯客户端插件包**（`dshClient` 行，Node half 为空），安装 = ① 包可被配置树解析 + ② 配置里加一行。
 

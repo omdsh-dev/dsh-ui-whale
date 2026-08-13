@@ -10,7 +10,7 @@
  * suite needs no resolution into the DSH snapshot's sources (the whale's own
  * dictionaries provide the copy the component asserts on).
  */
-import { Context } from 'cordis'
+import { Context } from '@deepseek-ai/cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import type { ConversationSnapshot, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
