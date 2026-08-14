@@ -12,26 +12,26 @@ Prerequisites: **a built DSH snapshot** (`~/.dsh/source/current` points to a sna
 
 ```sh
 # 1. 克隆仓库，构建产物已入库，无需构建
-git clone https://github.com/lhh010/dsh-ui-whale.git
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 装进 web profile（等价于在 $DSH_HOME/profiles/web 下执行 pnpm add）
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.3'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.3'
 ```
 
 ## snapshot0806 (v0.3.2 / v0.3.1 / v0.3.0 / v0.2.0) — profile install method
 
 ```sh
 # 1. 克隆仓库，构建产物已入库，无需构建
-git clone https://github.com/lhh010/dsh-ui-whale.git
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 装进 web profile（等价于在 $DSH_HOME/profiles/web 下执行 pnpm add）
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.2'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.2'
 ```
 
 Config lines (`$DSH_HOME/profiles/web/cordis.patch.yml`, hot-reload, no restart needed):
@@ -61,7 +61,7 @@ dsh registry enable @dsh-external/dsh-ui-whale
 
 ```sh
 # 1. 克隆仓库，构建产物已入库，无需构建
-git clone https://github.com/lhh010/dsh-ui-whale.git
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 让包装进 harness 依赖链（在 DSH 快照根目录，~/.dsh/source/current 指向的那个）
@@ -75,7 +75,7 @@ pnpm add -w link:/path/to/dsh-ui-whale
 
 ```sh
 # 在 harness 根目录执行；<commit> 为发布 commit（0805 用 tag v0.1.0）
-pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.1.0'
+pnpm add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.1.0'
 ```
 
 ### Config lines (0805 legacy mechanism)
