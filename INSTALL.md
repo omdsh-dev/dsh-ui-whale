@@ -8,6 +8,37 @@
 
 前置：**DSH 已构建快照**（`~/.dsh/source/current` 指向含 `lib/` 产物的快照——`cordis` 与各 `@deepseek-ai/dsh-client-*` 的 `link:` 开发依赖从该快照解析）+ `dsh web` 运行中。本插件是**纯客户端插件包**（`dshClient` 行，Node half 为空），安装 = ① 包可被配置树解析 + ② 配置里加一行。
 
+## 当前默认安装（dsh-v0.1.2-alpha.1，v0.3.5）
+
+**最新版默认安装**：`v0.3.5` 面向 `dsh-v0.1.2-alpha.1`（GitHub tag，源码构建安装，不发布 npm；同为 `0.1.1-rc.1` 之后的最新版本）。
+
+```sh
+# 1. 克隆仓库，构建产物已入库（无需构建）
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
+cd dsh-ui-whale && pnpm install
+
+# 2. 装进 web profile
+dsh plugin --profile web add link:/path/to/dsh-ui-whale
+#   或固定 tag 的 git 依赖：
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.5'
+```
+
+> 配置行（`$DSH_HOME/profiles/web/cordis.patch.yml`，热重载，无需重启）：
+> ```yaml
+> - insert:
+>     - id: dsh-ui-whale
+>       name: '@dsh-external/dsh-ui-whale'
+> ```
+
+## 迁移指南（DSH 0.1.1-rc.1 → 0.1.2-alpha.1）
+
+0.1.2-alpha.1 是面向插件作者的 alpha（不发布 npm），客户端 API 有破坏性重构，但官方保留 `ChatSnapshot.legacy` 兼容投影，本插件 v0.3.5 已完成迁移：
+
+- **`@deepseek-ai/dsh-client-runtime` 包已移除**：`ClientContext` 改从 `@deepseek-ai/cordis` 导入（`import type { Context as ClientContext }`）。
+- **`ConversationSnapshot` 重构为 views 架构**：旧字段 `partial`/`runningCalls` 移到 `ChatSnapshot.legacy` 兼容投影；会话生命周期字段（`running` 等）仍在新 `SessionSnapshot`。
+- **组件 props**：`PropsRuntime` 经 `useSession`（生命周期）+ `useConversation`（ConversationSnapshot）双座读取；跨包 slot 注册改用 `ctx.slots.inject(name, () => ctx.slots.register(...))`。
+- **插件作者迁移步骤**：① 替换 `ClientContext`/类型导入路径；② 读流式/工具状态改走 `useConversation → views.get('chat')?.legacy`；③ 会话生命周期改走 `useSession`；④ 注册改 `ctx.slots.inject`；⑤ 更新 `package.json` 的 `dsh.client.inject`（移除 `dsh-client-runtime`）与 `devDependencies` link。
+
 ## snapshot0810（v0.3.3）——profile 安装方式
 
 ```sh

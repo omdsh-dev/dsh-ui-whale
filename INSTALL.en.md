@@ -8,6 +8,37 @@
 
 Prerequisites: **a built DSH snapshot** (`~/.dsh/source/current` points to a snapshot containing `lib/` artifacts — the `link:` dev dependencies of `cordis` and each `@deepseek-ai/dsh-client-*` resolve from that snapshot) + `dsh web` running. This plugin is a **pure client-side plugin package** (the `dshClient` line; the Node half is empty), so installing = ① the package is resolvable by the config tree + ② one line added to the config.
 
+## Current default install (dsh-v0.1.2-alpha.1, v0.3.5)
+
+**Latest default install**: `v0.3.5` targets `dsh-v0.1.2-alpha.1` (GitHub tag, source-built install, not published to npm; it is also the latest version after `0.1.1-rc.1`).
+
+```sh
+# 1. Clone the repository; build artifacts are already in-tree (no build needed)
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
+cd dsh-ui-whale && pnpm install
+
+# 2. Install into the web profile
+dsh plugin --profile web add link:/path/to/dsh-ui-whale
+#   or a pinned-tag git dependency:
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.5'
+```
+
+> Config line (`$DSH_HOME/profiles/web/cordis.patch.yml`, hot-reloaded, no restart needed):
+> ```yaml
+> - insert:
+>     - id: dsh-ui-whale
+>       name: '@dsh-external/dsh-ui-whale'
+> ```
+
+## Migration guide (DSH 0.1.1-rc.1 → 0.1.2-alpha.1)
+
+0.1.2-alpha.1 is an author-facing alpha (not published to npm) with breaking Client API rework; the official `ChatSnapshot.legacy` compatibility projection keeps the old fields, and this plugin v0.3.5 has completed the migration:
+
+- **The `@deepseek-ai/dsh-client-runtime` package was removed**: `ClientContext` now imports from `@deepseek-ai/cordis` (`import type { Context as ClientContext }`).
+- **`ConversationSnapshot` was refactored into a views architecture**: the old `partial`/`runningCalls` moved to the `ChatSnapshot.legacy` compatibility projection; session lifecycle fields (`running` etc.) remain on the new `SessionSnapshot`.
+- **Component props**: `PropsRuntime` is read through the `useSession` (lifecycle) + `useConversation` (ConversationSnapshot) double seats; cross-package slot registration now uses `ctx.slots.inject(name, () => ctx.slots.register(...))`.
+- **Plugin-author migration steps**: ① replace `ClientContext`/type import paths; ② read streaming/tool state via `useConversation → views.get('chat')?.legacy`; ③ read session lifecycle via `useSession`; ④ register via `ctx.slots.inject`; ⑤ update `package.json` `dsh.client.inject` (drop `dsh-client-runtime`) and the `devDependencies` link.
+
 ## snapshot0810 (v0.3.3) — profile install method
 
 ```sh
