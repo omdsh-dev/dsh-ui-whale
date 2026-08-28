@@ -1,35 +1,37 @@
-# 安装（组织内成员）
+# 安装
+
+**简体中文** | [English](./INSTALL.en.md)
 
 > **版本选择**：`v0.3.3`（默认，含睡觉动画）面向 DSH 快照 snapshot0810（`snapshots/20260810T155924Z`），同时兼容 snapshot0811（`snapshots/20260811T152241Z`）与最终快照 snapshot0812（`snapshots/20260812T172954Z-final`）；`v0.3.2`（含睡觉动画）面向 snapshot0806（`snapshots/20260806T160212Z`）；`v0.2.0` 同为 0806 构建（无睡觉动画）；`v0.1.0` 面向 snapshot0805（`snapshots/20260805T134133Z`），按旧方式安装。以上构建同时兼容 snapshot0807（`snapshots/20260807T130646Z`）、snapshot0808（`snapshots/20260808T121140Z`）与 snapshot0809（`snapshots/20260809T140917Z`）——0807~0812 用户直接安装默认版本即可。版本对应详见 [README.md](README.md#版本对应--version-compatibility)。
 
 > **npm 发版**：`v0.3.3` 兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版）与 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版），实测运行/类型/启动清单通过。0811 起 vendored cordis 更名为 `@deepseek-ai/cordis`——本插件已把类型导入与 peer 迁移至 `@deepseek-ai/cordis`（`^4.0.1-rc.1`，npm rc.5 基线上为 `4.0.1-rc.4`），纯 `npm install` 不再报 ERESOLVE。经 `dsh plugin`/pnpm 安装自动处理。
 
-前置：**DSH 已构建快照**（`~/.dsh/source/current` 指向含 `lib/` 产物的快照——`cordis` 与各 `@deepseek-ai/dsh-client-*` 的 `link:` 开发依赖从该快照解析）+ `dsh web` 运行中 + **dsh-external 组织读权限**。本插件是**纯客户端插件包**（`dshClient` 行，Node half 为空），安装 = ① 包可被配置树解析 + ② 配置里加一行。
+前置：**DSH 已构建快照**（`~/.dsh/source/current` 指向含 `lib/` 产物的快照——`cordis` 与各 `@deepseek-ai/dsh-client-*` 的 `link:` 开发依赖从该快照解析）+ `dsh web` 运行中。本插件是**纯客户端插件包**（`dshClient` 行，Node half 为空），安装 = ① 包可被配置树解析 + ② 配置里加一行。
 
 ## snapshot0810（v0.3.3）——profile 安装方式
 
 ```sh
-# 1. 克隆私有仓库（需要组织读权限），构建产物已入库，无需构建
-git clone https://github.com/dsh-external/dsh-ui-whale.git
+# 1. 克隆仓库，构建产物已入库，无需构建
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 装进 web profile（等价于在 $DSH_HOME/profiles/web 下执行 pnpm add）
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.3'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.3'
 ```
 
 ## snapshot0806（v0.3.2 / v0.3.1 / v0.3.0 / v0.2.0）——profile 安装方式
 
 ```sh
-# 1. 克隆私有仓库（需要组织读权限），构建产物已入库，无需构建
-git clone https://github.com/dsh-external/dsh-ui-whale.git
+# 1. 克隆仓库，构建产物已入库，无需构建
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 装进 web profile（等价于在 $DSH_HOME/profiles/web 下执行 pnpm add）
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.2'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.2'
 ```
 
 配置行（`$DSH_HOME/profiles/web/cordis.patch.yml`，热重载，无需重启）：
@@ -58,8 +60,8 @@ dsh registry enable @dsh-external/dsh-ui-whale
 ### 路径一：克隆 + link 装进 harness（推荐）
 
 ```sh
-# 1. 克隆私有仓库（需要组织读权限），构建产物已入库，无需构建
-git clone https://github.com/dsh-external/dsh-ui-whale.git
+# 1. 克隆仓库，构建产物已入库，无需构建
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 让包装进 harness 依赖链（在 DSH 快照根目录，~/.dsh/source/current 指向的那个）
@@ -73,7 +75,7 @@ pnpm add -w link:/path/to/dsh-ui-whale
 
 ```sh
 # 在 harness 根目录执行；<commit> 为发布 commit（0805 用 tag v0.1.0）
-pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.1.0'
+pnpm add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.1.0'
 ```
 
 ### 配置行（0805 旧机制）
