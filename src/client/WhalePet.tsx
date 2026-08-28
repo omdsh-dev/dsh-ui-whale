@@ -1,20 +1,26 @@
 /**
  * WhalePet: the pixel-whale companion living in the session header. Always
- * visible; its pose follows the live conversation snapshot — the tail wags
- * (slowly while idle, faster while thinking/working), the eyes blink on a
- * per-mood cadence, and when a turn settles the whale spouts a droplet
- * fountain for a short celebration. Clicking the pet plays a pink-heart
- * celebration (0-1-2-3-0, growing in the top-left corner) on top of whatever
- * the whale is doing. The pet renders as layered CSS box-shadow pixel art
- * (body + eyes + tail + spout + heart), each layer a 1x1 div whose shadow
- * list is the frame data, so animation is pure style swaps on a fixed DOM
- * tree — no re-layout, no per-frame React churn beyond one style update per
- * layer.
+ * visible; its pose follows the live Session and Conversation snapshots —
+ * the tail wags (slowly while idle, faster while thinking/working), the eyes
+ * blink on a per-mood cadence, and when a turn settles the whale spouts a
+ * droplet fountain for a short celebration. Clicking the pet plays a
+ * pink-heart celebration (0-1-2-3-0, growing in the top-left corner) on top
+ * of whatever the whale is doing. The pet renders as layered CSS box-shadow
+ * pixel art (body + eyes + tail + spout + heart), each layer a 1x1 div whose
+ * shadow list is the frame data, so animation is pure style swaps on a fixed
+ * DOM tree — no re-layout, no per-frame React churn beyond one style update
+ * per layer.
  */
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
+// Type-only: pulls the Chat Conversation view into the views map.
+import type {} from '@deepseek-ai/dsh-client-ui-chat/client'
+// Type-only: pulls the ConversationSnapshot type and the useConversation seat.
+import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+// Type-only: pulls the useSession seat over the Session lifecycle snapshot.
+import type {} from '@deepseek-ai/dsh-client-ui-session/client'
+import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-ui-conversation/client'
 import {
   advance, frameOf, initialState, moodKey, moodOf, SPOUT_DURATION, TICK_MS, type WhaleMood, type WhaleAnimationState,
 } from './animation.ts'
@@ -24,9 +30,15 @@ import css from './WhalePet.module.css'
 /** Full props of the header pet: session standard kit + locale seat. */
 export type WhalePetProps = PropsRuntime<'conversation.session.header.actions'> & PropsLocale<'whale'>
 
-/** Whether the snapshot shows the model emitting reasoning with no tool in flight. */
+/** Whether the Chat view shows the model emitting reasoning with no tool in flight. */
 function isThinking(snapshot: ConversationSnapshot): boolean {
-  return snapshot.partial?.blocks.some(block => block.kind === 'reasoning') ?? false
+  const chat = snapshot.views.get('chat')
+  return chat?.legacy.partial?.blocks.some(block => block.kind === 'reasoning') ?? false
+}
+
+/** Whether the Chat view shows at least one running tool call. */
+function hasRunningTool(snapshot: ConversationSnapshot): boolean {
+  return (snapshot.views.get('chat')?.legacy.runningCalls.length ?? 0) > 0
 }
 
 /**
@@ -34,10 +46,10 @@ function isThinking(snapshot: ConversationSnapshot): boolean {
  * fixed tick; a completed turn (running true → false edge) arms the spout
  * celebration for SPOUT_DURATION ticks; a click arms one heart pass.
  */
-export function WhalePet({ useSession, t }: WhalePetProps) {
+export function WhalePet({ useSession, useConversation, t }: WhalePetProps) {
   const running = useSession(s => s.running)
-  const thinking = useSession(isThinking)
-  const toolRunning = useSession(s => s.runningCalls.length > 0)
+  const thinking = useConversation(isThinking)
+  const toolRunning = useConversation(hasRunningTool)
 
   // Animation tick loop. The state machine is pure (animation.ts); the
   // component only advances it on a fixed cadence and hands the derived

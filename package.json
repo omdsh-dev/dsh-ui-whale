@@ -1,6 +1,6 @@
 {
   "name": "@dsh-external/dsh-ui-whale",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "private": true,
   "type": "module",
   "description": "DSH Web UI 像素鲸鱼伙伴插件：会话标题栏常驻，平时眨眼/偶尔摆尾/动胸鳍，思考运行时持续动起来，回合完成头顶喷水，点击冒爱心，零核心改动。",
@@ -14,8 +14,9 @@
   "dsh": {
     "client": {
       "inject": [
+        "@deepseek-ai/dsh-api-session-controller",
         "@deepseek-ai/dsh-client-locale",
-        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-chat",
         "@deepseek-ai/dsh-client-ui-conversation"
       ],
       "platform": "web"
@@ -35,10 +36,13 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
+    "@deepseek-ai/dsh-api-session-controller": "link:../.dsh/source/current/packages/api/session-controller",
     "@deepseek-ai/dsh-client-locale": "link:../.dsh/source/current/packages/client/locale",
-    "@deepseek-ai/dsh-client-runtime": "link:../.dsh/source/current/packages/client/runtime",
-    "@deepseek-ai/dsh-client-test-runtime": "link:../.dsh/source/current/packages/client/test-runtime",
+    "@deepseek-ai/dsh-client-store": "link:../.dsh/source/current/packages/client/store",
+    "@deepseek-ai/dsh-client-test-runtime": "link:../.dsh/source/current/packages/test-support/client-runtime",
+    "@deepseek-ai/dsh-client-ui-chat": "link:../.dsh/source/current/packages/client/ui-chat",
     "@deepseek-ai/dsh-client-ui-conversation": "link:../.dsh/source/current/packages/client/ui-conversation",
+    "@deepseek-ai/dsh-client-ui-session": "link:../.dsh/source/current/packages/client/ui-session",
     "@deepseek-ai/dsh-client-ui-slots": "link:../.dsh/source/current/packages/client/ui-slots",
     "@deepseek-ai/dsh-invariants": "link:../.dsh/source/current/packages/runtime-diagnostics/invariants",
     "@testing-library/react": "^16.1.0",

@@ -11,18 +11,27 @@ importers:
       '@deepseek-ai/cordis':
         specifier: link:../.dsh/source/current/vendor/cordis
         version: link:../.dsh/source/current/vendor/cordis
+      '@deepseek-ai/dsh-api-session-controller':
+        specifier: link:../.dsh/source/current/packages/api/session-controller
+        version: link:../.dsh/source/current/packages/api/session-controller
       '@deepseek-ai/dsh-client-locale':
         specifier: link:../.dsh/source/current/packages/client/locale
         version: link:../.dsh/source/current/packages/client/locale
-      '@deepseek-ai/dsh-client-runtime':
-        specifier: link:../.dsh/source/current/packages/client/runtime
-        version: link:../.dsh/source/current/packages/client/runtime
+      '@deepseek-ai/dsh-client-store':
+        specifier: link:../.dsh/source/current/packages/client/store
+        version: link:../.dsh/source/current/packages/client/store
       '@deepseek-ai/dsh-client-test-runtime':
-        specifier: link:../.dsh/source/current/packages/client/test-runtime
-        version: link:../.dsh/source/current/packages/client/test-runtime
+        specifier: link:../.dsh/source/current/packages/test-support/client-runtime
+        version: link:../.dsh/source/current/packages/test-support/client-runtime
+      '@deepseek-ai/dsh-client-ui-chat':
+        specifier: link:../.dsh/source/current/packages/client/ui-chat
+        version: link:../.dsh/source/current/packages/client/ui-chat
       '@deepseek-ai/dsh-client-ui-conversation':
         specifier: link:../.dsh/source/current/packages/client/ui-conversation
         version: link:../.dsh/source/current/packages/client/ui-conversation
+      '@deepseek-ai/dsh-client-ui-session':
+        specifier: link:../.dsh/source/current/packages/client/ui-session
+        version: link:../.dsh/source/current/packages/client/ui-session
       '@deepseek-ai/dsh-client-ui-slots':
         specifier: link:../.dsh/source/current/packages/client/ui-slots
         version: link:../.dsh/source/current/packages/client/ui-slots
