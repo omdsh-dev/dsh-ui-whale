@@ -15,7 +15,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import type { SessionSnapshot } from '@deepseek-ai/dsh-api-session-controller/client'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-ui-conversation/client'
-import type { SessionId } from '@deepseek-ai/dsh-session/types'
+/** Session id values are opaque branded strings; tests use plain strings. */
+type SessionId = string
 import { apply, inject } from '../src/client/index.ts'
 import { WhalePet, type WhalePetProps } from '../src/client/WhalePet.tsx'
 import { zh as whaleZh } from '../src/client/locales.ts'
@@ -47,7 +48,7 @@ interface ChatLegacy {
 function conversationSnapshot(legacy: Partial<ChatLegacy>): ConversationSnapshot {
   const view = { partial: null as ChatLegacy['partial'], runningCalls: [] as ChatLegacy['runningCalls'], ...legacy }
   return {
-    views: { get: () => ({ legacy: view, timeline: { turnOrder: [], turns: new Map() } }) },
+    views: { get: () => ({ legacy: view, timeline: { turnOrder: [], turns: new Map() } }) as unknown as import('@deepseek-ai/dsh-client-ui-chat/client').ChatSnapshot },
     activeTargets: new Set(),
   }
 }
@@ -74,11 +75,11 @@ function bench() {
   } as never)
   const fiber = ctx.plugin({ inject: [...inject], apply })
   const originalDispose = fiber.dispose.bind(fiber)
-  fiber.dispose = (async () => {
+  const dispose = async () => {
     await originalDispose()
-    for (const dispose of injectDisposers) dispose()
-  }) as unknown as typeof fiber.dispose
-  return { ctx, fiber, entry: () => entries.get('conversation.session.header.actions') }
+    for (const d of injectDisposers) d()
+  }
+  return { ctx, fiber, dispose, entry: () => entries.get('conversation.session.header.actions') }
 }
 
 describe('ui-whale browser plugin', () => {
@@ -92,7 +93,7 @@ describe('ui-whale browser plugin', () => {
     const b = bench()
     await b.fiber.await()
     expect(b.entry()).toBeDefined()
-    await b.fiber.dispose()
+    await b.dispose()
     expect(b.entry()).toBeUndefined()
   })
 

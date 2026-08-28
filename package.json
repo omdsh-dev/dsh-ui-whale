@@ -1,6 +1,6 @@
 {
   "name": "@dsh-external/dsh-ui-whale",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "private": true,
   "type": "module",
   "description": "DSH Web UI 像素鲸鱼伙伴插件：会话标题栏常驻，平时眨眼/偶尔摆尾/动胸鳍，思考运行时持续动起来，回合完成头顶喷水，点击冒爱心，零核心改动。",
@@ -42,6 +42,7 @@
     "@deepseek-ai/dsh-client-test-runtime": "link:../.dsh/source/current/packages/test-support/client-runtime",
     "@deepseek-ai/dsh-client-ui-chat": "link:../.dsh/source/current/packages/client/ui-chat",
     "@deepseek-ai/dsh-client-ui-conversation": "link:../.dsh/source/current/packages/client/ui-conversation",
+    "@deepseek-ai/dsh-client-ui-renderer": "link:../.dsh/source/current/packages/client/ui-renderer",
     "@deepseek-ai/dsh-client-ui-session": "link:../.dsh/source/current/packages/client/ui-session",
     "@deepseek-ai/dsh-client-ui-slots": "link:../.dsh/source/current/packages/client/ui-slots",
     "@deepseek-ai/dsh-invariants": "link:../.dsh/source/current/packages/runtime-diagnostics/invariants",
