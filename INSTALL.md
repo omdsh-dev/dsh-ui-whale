@@ -14,13 +14,13 @@
 
 ```sh
 # 1. 克隆仓库，构建产物已入库（无需构建）
-git clone https://github.com/omdsh-dev/dsh-ui-whale.git
+git clone https://github.com/lhh010/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 装进 web profile
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.5'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.5'
 ```
 
 > 配置行（`$DSH_HOME/profiles/web/cordis.patch.yml`，热重载，无需重启）：
@@ -29,6 +29,17 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 >     - id: dsh-ui-whale
 >       name: '@dsh-external/dsh-ui-whale'
 > ```
+
+## 提示词安装（让 DSH 自己装）
+
+把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
+
+> 帮我安装 dsh-ui-whale 插件（DSH 会话标题栏像素鲸鱼伙伴），步骤：
+> 1. 执行 `dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
+> 3. 再执行一次第 1 步的安装命令
+> 4. 完成后提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
+> 遇到报错先查 https://github.com/lhh010/dsh-ui-whale README 的常见问题/已知限制。
 
 ## 迁移指南（DSH 0.1.1-rc.1 → 0.1.2-alpha.1）
 
@@ -43,26 +54,26 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 
 ```sh
 # 1. 克隆仓库，构建产物已入库，无需构建
-git clone https://github.com/omdsh-dev/dsh-ui-whale.git
+git clone https://github.com/lhh010/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 装进 web profile（等价于在 $DSH_HOME/profiles/web 下执行 pnpm add）
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.3'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.3'
 ```
 
 ## snapshot0806（v0.3.2 / v0.3.1 / v0.3.0 / v0.2.0）——profile 安装方式
 
 ```sh
 # 1. 克隆仓库，构建产物已入库，无需构建
-git clone https://github.com/omdsh-dev/dsh-ui-whale.git
+git clone https://github.com/lhh010/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 装进 web profile（等价于在 $DSH_HOME/profiles/web 下执行 pnpm add）
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 #   或固定 tag 的 git 依赖：
-#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.2'
+#   dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.2'
 ```
 
 配置行（`$DSH_HOME/profiles/web/cordis.patch.yml`，热重载，无需重启）：
@@ -75,7 +86,7 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 
 ## snapshot0806 —— registry 安装方式（可选通道）
 
-前提：DSH 已集成 plugin-registry（`dsh registry` 命令可用；集成步骤见 [plugin-registry 仓库](https://github.com/dsh-external/plugin-registry/blob/main/docs/cookbook/integrating-into-dsh.md)）。本插件的 `dsh.plugin.json` 清单已通过 registry id 校验（id = npm 包名 `@dsh-external/dsh-ui-whale`，含 `client` 声明）。registry 通道与官方 profile 通道**互斥**（碰撞守卫拒绝双挂载），二选一。
+前提：DSH 已集成 plugin-registry（`dsh registry` 命令可用；该集成为内部流程，本插件公开镜像不依赖它，公开安装走上文 profile 方式）。本插件的 `dsh.plugin.json` 清单已通过
 
 ```sh
 # 目录安装（需要代码，克隆 + pnpm install 后）
@@ -92,7 +103,7 @@ dsh registry enable @dsh-external/dsh-ui-whale
 
 ```sh
 # 1. 克隆仓库，构建产物已入库，无需构建
-git clone https://github.com/omdsh-dev/dsh-ui-whale.git
+git clone https://github.com/lhh010/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 
 # 2. 让包装进 harness 依赖链（在 DSH 快照根目录，~/.dsh/source/current 指向的那个）
@@ -106,7 +117,7 @@ pnpm add -w link:/path/to/dsh-ui-whale
 
 ```sh
 # 在 harness 根目录执行；<commit> 为发布 commit（0805 用 tag v0.1.0）
-pnpm add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.1.0'
+pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.1.0'
 ```
 
 ### 配置行（0805 旧机制）
