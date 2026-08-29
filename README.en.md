@@ -4,6 +4,41 @@
 
 A resident pixel-whale companion plugin for the DSH Web UI: a small whale lives permanently in the session title bar (right side of the title row) and reacts in real time to the session snapshot — **zero core changes**.
 
+## Install
+
+```sh
+# Option 1: pinned-tag git dependency (public mirror, recommended; github:omdsh-dev/dsh-ui-whale also works)
+dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'
+
+# Option 2: local link (development)
+git clone https://github.com/lhh010/dsh-ui-whale.git
+cd dsh-ui-whale && pnpm install && pnpm run build
+dsh plugin --profile web add link:/path/to/dsh-ui-whale
+```
+
+Config line (`$DSH_HOME/profiles/web/cordis.patch.yml`, hot-reloaded, no restart needed):
+
+```yaml
+- insert:
+    - id: dsh-ui-whale
+      name: '@dsh-external/dsh-ui-whale'
+```
+
+> **Install tips**: pnpm 11 may block node-pty build scripts on first install — run `pnpm approve-builds --all` under `~/.dsh/profiles/web` and re-run the install; then **hard-refresh the browser** (Ctrl/Cmd+Shift+R).
+
+### Prompt install (let DSH install it)
+
+Paste this prompt into any DSH session and the agent installs it for you:
+
+> Install the dsh-ui-whale plugin (DSH session-header pixel whale pet):
+> 1. Run `dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
+> 3. Re-run the install command from step 1
+> 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
+> On errors, first check the FAQ/known limitations in the README at https://github.com/lhh010/dsh-ui-whale.
+
+## Version compatibility
+
 ## 版本对应 / Version compatibility
 
 Build artifacts are updated with each DSH snapshot; pick the version matching your snapshot when installing:
