@@ -25,7 +25,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 > **alpha 发版兼容**：兼容 `dsh-v0.1.2-alpha.1`（GitHub tag `dsh-v0.1.2-alpha.1`，源码构建安装，不发布 npm；v0.3.5 迁移并验证：0.1.2-alpha.1 移除了 `@deepseek-ai/dsh-client-runtime` 客户端包，`ClientContext` 改从 `@deepseek-ai/cordis` 导入、`ConversationSnapshot` 重构为 views 架构（旧 `nodes`/`partial`/`runningCalls` 等字段移到 `ChatSnapshot.legacy` 兼容投影）。本插件已在 0.1.2-alpha.1 源码基线上重写数据来源（`useSession` 读 Session 生命周期、`useConversation` 经 `views.get('chat').legacy` 读流式/工具状态），typecheck、34 个单测与构建全绿，注册改用 `ctx.slots.inject('conversation.session.header.actions', …)` 新范式）。
 本插件 v0.3.6 起内置**兼容性自诊断**：apply 时探测所需客户端 API,不满足时不再崩溃,而是在页面右下角渲染修复指引横幅(点击可关闭),提示升级 DSH 或更新插件。
 
-> git 依赖方式固定 tag（公开镜像，推荐）：`pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'`（或 `github:lhh010/dsh-ui-whale`；历史版本：0810/0811 用户用 `#v0.3.3`，0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
+> git 依赖方式固定 tag（公开镜像，推荐）：`pnpm add '@dsh-external/dsh-ui-whale@github:omdsh-dev/dsh-ui-whale#v0.3.6'`（或 `github:omdsh-dev/dsh-ui-whale`；历史版本：0810/0811 用户用 `#v0.3.3`，0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
 
 ## 0809 兼容要点（snapshot0809，实机验证）
 
@@ -84,7 +84,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 **官方 profile 通道**（0806 默认，配置行热重载，无需重启）：
 
 ```sh
-git clone https://github.com/lhh010/dsh-ui-whale.git
+git clone https://github.com/omdsh-dev/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 ```
