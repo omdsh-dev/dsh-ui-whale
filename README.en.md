@@ -26,7 +26,7 @@ Build artifacts are updated with each DSH snapshot; pick the version matching yo
 
 > **npm release compatibility**: compatible with the DSH npm release `@deepseek-ai/dsh@0.0.1-rc.5` (dist-tag `next`, i.e. the npm release of the final snapshot snapshot0812; `npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` can access and start that version, lib production mode), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.2` (the npm release of snapshot0811). Verified on a real machine (npm rc.5 baseline): after `dsh web` starts, the `window.__DSH_BOOT__` manifest includes `@dsh-external/dsh-ui-whale` (inject: `dsh-client-locale`/`dsh-client-runtime`/`dsh-client-ui-conversation`), and `/plugins/@dsh-external/dsh-ui-whale/client.js` returns 200; the source typechecks fully green against the rc.5 baseline build artifacts (this plugin has migrated its cordis type imports and peer dependency to `@deepseek-ai/cordis`, see below). Note: starting from 0811 the vendored cordis was renamed to `@deepseek-ai/cordis` (the npm release no longer publishes the vendored package under the `cordis` name); this plugin has migrated accordingly (peer declaration `@deepseek-ai/cordis: ^4.0.1-rc.1`, which is `4.0.1-rc.4` on the npm rc.5 baseline), and a plain `npm install` no longer reports ERESOLVE.
 
-> Pinning the tag for git dependencies (public mirror, recommended): `pnpm add '@dsh-external/dsh-ui-whale@github:dsh-external/dsh-ui-whale#v0.3.6'` (or `github:dsh-external/dsh-ui-whale`; historical: 0810/0811 users use `#v0.3.3`, 0806~0809 users `#v0.3.2`, 0805 users `#v0.1.0`).
+> Pinning the tag for git dependencies (public mirror, recommended): `pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'` (or `github:lhh010/dsh-ui-whale`; historical: 0810/0811 users use `#v0.3.3`, 0806~0809 users `#v0.3.2`, 0805 users `#v0.1.0`).
 
 ## 0809 compatibility highlights (snapshot0809, real-hardware verified)
 
@@ -85,7 +85,7 @@ Full steps in [INSTALL.md](INSTALL.md). Two channels — pick either one (mutual
 **Official profile channel** (default for 0806; config lines hot-reload, no restart needed):
 
 ```sh
-git clone https://github.com/dsh-external/dsh-ui-whale.git
+git clone https://github.com/lhh010/dsh-ui-whale.git
 cd dsh-ui-whale && pnpm install
 dsh plugin --profile web add link:/path/to/dsh-ui-whale
 ```
