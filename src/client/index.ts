@@ -47,7 +47,10 @@ export const inject = ['slots', 'locale']
  * ui-conversation and rolls the contribution back with this plugin's fiber.
  * @param ctx - client root context.
  */
+import { startUpdateChip } from './update-chip.ts'
+
 export function apply(ctx: ClientContext): void {
+  startUpdateChip()
   // Graceful compatibility: if the running DSH lacks the client APIs this
   // plugin needs (e.g. an older DSH without ctx.slots.inject), render a
   // remediation banner instead of throwing.

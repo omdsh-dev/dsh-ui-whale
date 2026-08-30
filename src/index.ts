@@ -1,9 +1,21 @@
 /**
- * Pixel-whale pet plugin, node half. Pure UI plugin: the empty apply exists so
- * the plugin appears in the host cordis.yml / Loader; the browser half ships
- * via exports["./client"], discovered through the package.json dshClient
- * declaration.
+ * Pixel-whale plugin, node half. Registers the self-update endpoint (the
+ * user-initiated one-click update from the update chip); the browser half
+ * ships the pet via exports["./client"].
  */
+import type { Context } from '@deepseek-ai/cordis'
+import { registerUpdateEndpoint } from './update-endpoint.ts'
 
-/** Host plugin body — no host-side behavior for this surface plugin. */
-export function apply(): void {}
+/** Stable Cordis plugin name (matches the manifest id). */
+export const name = '@dsh-external/dsh-ui-whale'
+
+/** The web server is required before the update endpoint can register. */
+export const inject = ['webServer']
+
+/**
+ * Host plugin body: register the update endpoint.
+ * @param ctx - host context carrying the webServer service.
+ */
+export function apply(ctx: Context): void {
+  registerUpdateEndpoint(ctx)
+}

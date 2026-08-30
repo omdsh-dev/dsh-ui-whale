@@ -108,10 +108,13 @@ describe('ui-whale browser plugin', () => {
     void b.fiber
   })
 
-  it('node half apply is inert', () => {
+  it('node half registers the update endpoints', () => {
     const ctx = new Context()
-    expect(() => { nodeApply() }).not.toThrow()
-    expect(ctx.registry.size).toBe(0)
+    const registered: string[] = []
+    ctx.provide('webServer', { register: (route: { path: string }) => { registered.push(route.path); return () => {} } } as never)
+    nodeApply(ctx)
+    expect(registered).toContain('/dsh-ui-whale/latest')
+    expect(registered).toContain('/dsh-ui-whale/update')
   })
 })
 
