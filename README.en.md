@@ -8,7 +8,7 @@ A resident pixel-whale companion plugin for the DSH Web UI: a small whale lives 
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-ui-whale also works)
-dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'
+dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.8'
 
 # Option 2: local link (development)
 git clone https://github.com/lhh010/dsh-ui-whale.git
@@ -31,7 +31,7 @@ Config line (`$DSH_HOME/profiles/web/cordis.patch.yml`, hot-reloaded, no restart
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-ui-whale plugin (DSH session-header pixel whale pet):
-> 1. Run `dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.8'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
@@ -50,18 +50,18 @@ Build artifacts are updated with each DSH snapshot; pick the version matching yo
 | `v0.3.0` | `snapshots/20260806T160212Z` (snapshot0806) | 0806 build + sleep animation (falls asleep after 10 s of continuous idle) |
 | `v0.3.1` | `snapshots/20260806T160212Z` (snapshot0806) | Sleep Z changed to a 5-frame loop `0-1-2-3-4-5-1-…`; the tail gained one frame, changed to `0-1-2-3-4-3-2-1-0` |
 | `v0.3.2` | `snapshots/20260806T160212Z` (snapshot0806) | Fixed the sleep Z float trajectory (repositioned the Z of sleep frames 2~5) |
-| `v0.3.6` (default) | `dsh-v0.1.2-alpha.1` (GitHub tag, source-built install) | Current: migrated to the 0.1.2-alpha.1 client API (views/legacy projection + ctx.slots.inject), with the compat self-diagnostic banner |
+| `v0.3.8` (default) | `dsh-v0.1.2-alpha.1` (GitHub tag, source-built install) | Current: migrated to the 0.1.2-alpha.1 client API (views/legacy projection + ctx.slots.inject), with the compat self-diagnostic banner |
 | `v0.3.5` | `dsh-v0.1.2-alpha.1` | Introduced the compat self-diagnostic banner |
 | `v0.3.4` | npm `@deepseek-ai/dsh@0.1.1-rc.1` | 0.1.1-rc.1 real boot verified (boot manifest + client.js 200); relied slots/services unchanged |
 | `v0.3.3` (default) | `snapshots/20260810T155924Z` (snapshot0810) | Compatibility build: client plugin m
 
-> **Compatibility note**: the builds in the table above were all developed against snapshot0806 and are also compatible with snapshot0807 (`snapshots/20260807T130646Z`), snapshot0808 (`snapshots/20260808T121140Z`), snapshot0809 (`snapshots/20260809T140917Z`), snapshot0810 (`snapshots/20260810T155924Z`), snapshot0811 (`snapshots/20260811T152241Z`) and the final snapshot snapshot0812 (`snapshots/20260812T172954Z-final`) — users on 0807~0812 can simply install the default version (`v0.3.6`) (real-hardware boot verified for 0811 and 0812, see below).
+> **Compatibility note**: the builds in the table above were all developed against snapshot0806 and are also compatible with snapshot0807 (`snapshots/20260807T130646Z`), snapshot0808 (`snapshots/20260808T121140Z`), snapshot0809 (`snapshots/20260809T140917Z`), snapshot0810 (`snapshots/20260810T155924Z`), snapshot0811 (`snapshots/20260811T152241Z`) and the final snapshot snapshot0812 (`snapshots/20260812T172954Z-final`) — users on 0807~0812 can simply install the default version (`v0.3.8`) (real-hardware boot verified for 0811 and 0812, see below).
 
 > **alpha release compatibility**: compatible with `dsh-v0.1.2-alpha.1` (GitHub tag `dsh-v0.1.2-alpha.1`, source-built install, not published to npm; v0.3.5 migrated & verified: 0.1.2-alpha.1 removed the `@deepseek-ai/dsh-client-runtime` client package — `ClientContext` now imports from `@deepseek-ai/cordis`, and `ConversationSnapshot` was refactored into a views architecture (the old `partial`/`runningCalls` moved to the `ChatSnapshot.legacy` compatibility projection). This plugin rewrote its data sources on the 0.1.2-alpha.1 source baseline (`useSession` reads the Session lifecycle snapshot; `useConversation` reads streaming/tool state via `views.get('chat').legacy`), with typecheck, all 34 unit tests, and the build green; registration uses the new `ctx.slots.inject('conversation.session.header.actions', …)` form).
 
 > **npm release compatibility**: compatible with the DSH npm release `@deepseek-ai/dsh@0.0.1-rc.5` (dist-tag `next`, i.e. the npm release of the final snapshot snapshot0812; `npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` can access and start that version, lib production mode), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.2` (the npm release of snapshot0811). Verified on a real machine (npm rc.5 baseline): after `dsh web` starts, the `window.__DSH_BOOT__` manifest includes `@dsh-external/dsh-ui-whale` (inject: `dsh-client-locale`/`dsh-client-runtime`/`dsh-client-ui-conversation`), and `/plugins/@dsh-external/dsh-ui-whale/client.js` returns 200; the source typechecks fully green against the rc.5 baseline build artifacts (this plugin has migrated its cordis type imports and peer dependency to `@deepseek-ai/cordis`, see below). Note: starting from 0811 the vendored cordis was renamed to `@deepseek-ai/cordis` (the npm release no longer publishes the vendored package under the `cordis` name); this plugin has migrated accordingly (peer declaration `@deepseek-ai/cordis: ^4.0.1-rc.1`, which is `4.0.1-rc.4` on the npm rc.5 baseline), and a plain `npm install` no longer reports ERESOLVE.
 
-> Pinning the tag for git dependencies (public mirror, recommended): `pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.6'` (or `github:lhh010/dsh-ui-whale`; historical: 0810/0811 users use `#v0.3.3`, 0806~0809 users `#v0.3.2`, 0805 users `#v0.1.0`).
+> Pinning the tag for git dependencies (public mirror, recommended): `pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.8'` (or `github:lhh010/dsh-ui-whale`; historical: 0810/0811 users use `#v0.3.3`, 0806~0809 users `#v0.3.2`, 0805 users `#v0.1.0`).
 
 ## 0809 compatibility highlights (snapshot0809, real-hardware verified)
 
