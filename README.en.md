@@ -4,6 +4,9 @@
 
 A resident pixel-whale companion plugin for the DSH Web UI: a small whale lives permanently in the session title bar (right side of the title row) and reacts in real time to the session snapshot — **zero core changes**.
 
+> **Pick the plugin version that matches your DSH** (a mismatch crashes: common symptom `useConversation is not a function`)
+> - DSH **0.1.1-rc.2** (npm latest): install the **old** version `'@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.4'`
+> - DSH **0.1.2-alpha.1 / alpha.2**: install the **new** version (the default command below)
 ## Install
 
 ```sh
