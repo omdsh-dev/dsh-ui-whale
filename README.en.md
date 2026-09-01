@@ -38,7 +38,7 @@ Paste this prompt into any DSH session and the agent installs it for you:
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
-> On errors, first check the FAQ/known limitations in the README at https://github.com/lhh010/dsh-ui-whale.
+> On errors, first check the FAQ/known limitations in the README at <https://github.com/lhh010/dsh-ui-whale>.
 
 ## Version compatibility
 
